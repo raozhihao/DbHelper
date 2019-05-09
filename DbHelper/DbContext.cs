@@ -278,7 +278,7 @@ namespace DbHelper
                 dataAdapter.SelectCommand = command;
                 DbCommandBuilder commandBuilder = DbProvider.CreateCommandBuilder();
                 commandBuilder.DataAdapter = dataAdapter;
-                commandBuilder.SetAllValues = true;
+                commandBuilder.SetAllValues = SetAllValues;
                 commandBuilder.ConflictOption = conflictOption;
                 dataAdapter.Update(dt);
                 return true;
@@ -457,6 +457,7 @@ namespace DbHelper
             }
             catch
             {
+                //如果配置文件失败,且又没有连接字符串,则在此处使用默认的PostgreSql
                 if (string.IsNullOrWhiteSpace(this.ConnectionStr))
                     ConnectionStr = "Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;";
                 DbProvider = new NpgsqlFactory();

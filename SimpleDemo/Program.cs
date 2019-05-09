@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleDemo
 {
@@ -18,9 +15,10 @@ namespace SimpleDemo
             bool re = false;
             object obj;
 
+
             /////======   创建表  ==========
             //string createTable = "CREATE TABLE TESTDEMO(TID SERIAL PRIMARY KEY,TNAME VARCHAR,TINT INT)";
-            // re = dbContext.ExecuteNonQuery(createTable);
+            //re = dbContext.ExecuteNonQuery(createTable);
             //if (re)
             //    Console.WriteLine("创建表成功");
             //else
@@ -28,7 +26,7 @@ namespace SimpleDemo
 
 
             /////======= 向表中插入数据 ======
-            // query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
+            //query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
             //dbContext.AddParameter(new ParameterHelper("TNAME", "demo1"));
             //dbContext.AddParameter(new ParameterHelper("INT", 111));
             //re = dbContext.ExecuteNonQuery(query);
@@ -51,7 +49,7 @@ namespace SimpleDemo
             /////===== 修改表 =======
             //table.Rows[0][1] = "hehe";
             //re = dbContext.UpdateTable(query, table);
-            //if(re)
+            //if (re)
             //{
             //    Console.WriteLine("修改表成功");
             //    PrintTable(table);
@@ -62,9 +60,12 @@ namespace SimpleDemo
             //}
 
             /////===== 获取强类型集合 =======
-            query = "SELECT * FROM TESTDEMO";
-            var list = dbContext.GetList<Test>(query);
-            PrintList(list);
+            //query = "SELECT * FROM TESTDEMO";
+            //var list = dbContext.GetList<Test>(query);
+            //PrintList(list);
+
+            
+
             Console.ReadKey();
         }
 
