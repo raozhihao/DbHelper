@@ -19,7 +19,7 @@ namespace DbHelper
         /// 获取确切类型的DbParameter
         /// </summary>
         /// <returns></returns>
-        public DbParameter GetDbParameter()
+        internal DbParameter GetDbParameter()
         {
             return dbParameter;
         }
@@ -35,6 +35,9 @@ namespace DbHelper
             this.Value = value;
         }
 
+        /// <summary>
+        /// 构造器
+        /// </summary>
         public ParameterHelper()
         {
             dbParameter = _dbProvider.CreateParameter();
@@ -81,8 +84,14 @@ namespace DbHelper
         /// </summary>
         public override object Value { get => dbParameter.Value; set => dbParameter.Value = value; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override bool IsNullable { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void ResetDbType()
         {
             dbParameter.ResetDbType();

@@ -1,4 +1,4 @@
-﻿using DbHelper.Factory;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,6 +8,9 @@ using System.Reflection;
 
 namespace DbHelper
 {
+    /// <summary>
+    /// 提供对数据库访问的上下文类
+    /// </summary>
     public class DbContext
     {
         #region 私有字段
@@ -49,8 +52,9 @@ namespace DbHelper
         /// 构造函数
         /// </summary>
         /// <param name="connectionStr">连接字符串</param>
+        /// <param name="dbType">数据库类型,默认使用app.config中的设置</param>
         /// <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        public DbContext(string connectionStr, DataBaseType dbType= DataBaseType.None, string selectName = "")
+        public DbContext(string connectionStr, DataBaseType dbType = DataBaseType.None, string selectName = "")
         {
             this.ConnectionStr = connectionStr;
             switch (dbType)
@@ -59,16 +63,16 @@ namespace DbHelper
                     RegisterDb(selectName);
                     break;
                 case DataBaseType.SqlServer:
-                    DbProvider = new SqlServerFactory();
+                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance; //new SqlServerFactory();
                     break;
                 case DataBaseType.Oracle:
-                    DbProvider = new OracleFactory();
+                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance; //new OracleFactory();
                     break;
                 case DataBaseType.PostgreSql:
-                    DbProvider = new NpgsqlFactory();
+                    DbProvider = Npgsql.NpgsqlFactory.Instance; //new NpgsqlFactory();
                     break;
             }
-           
+
             ParameterHelper.RegisterDbProvider(DbProvider);
         }
 
@@ -78,10 +82,12 @@ namespace DbHelper
         /// <param name="conStrBuilder">连接字符串对象</param>
         /// <param name="dbType">对应数据库类型</param>
         /// <param name="selectName">配置文件对应数据库名称</param>
-        public DbContext(DbConnectionStringBuilder conStrBuilder, DataBaseType dbType = DataBaseType.None, string selectName = "") 
-            :this(conStrBuilder.ToString(),dbType,selectName) { }
+        public DbContext(DbConnectionStringBuilder conStrBuilder, DataBaseType dbType = DataBaseType.None, string selectName = "")
+            : this(conStrBuilder.ToString(), dbType, selectName) { }
 
-       
+        /// <summary>
+        /// 构造器
+        /// </summary>
         public DbContext() : this("")
         {
         }
@@ -114,14 +120,13 @@ namespace DbHelper
         /// <param name="parameter">参数对象</param>
         public void AddParameter(DbParameter parameter)
         {
+            DbParameter par = parameter;
             if (parameter is ParameterHelper)
             {
-                AddParameter((ParameterHelper)parameter);
+                //获取其确切类型
+                par = ((ParameterHelper)parameter).GetDbParameter();
             }
-            else
-            {
-                this.parameters.Add(parameter);
-            }
+            this.parameters.Add(par);
         }
 
         /// <summary>
@@ -130,7 +135,10 @@ namespace DbHelper
         /// <param name="parameter"></param>
         public void AddParameter(ParameterHelper parameter)
         {
-            AddParameter(parameter.GetDbParameter());
+            //这里一定是要加入其父类,这里的parameter传进来的确切类型为ParameterHelper
+            //但DbContext需要的却是其确切的类型,例如SqlParameter
+            //所以这里使用ParameterHelper对象的GetDbParameter()方法获取其映射的确切类型
+            this.parameters.Add(parameter.GetDbParameter());
         }
 
         /// <summary>
@@ -201,7 +209,7 @@ namespace DbHelper
         /// <param name="proName">存储过程或函数名</param>
         public void ExcuteProcedure(string proName)
         {
-             this.ExcuteSacler(proName, CommandType.StoredProcedure);
+            this.ExcuteSacler(proName, CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -460,7 +468,7 @@ namespace DbHelper
                 //如果配置文件失败,且又没有连接字符串,则在此处使用默认的PostgreSql
                 if (string.IsNullOrWhiteSpace(this.ConnectionStr))
                     ConnectionStr = "Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;";
-                DbProvider = new NpgsqlFactory();
+                DbProvider = Npgsql.NpgsqlFactory.Instance; //new NpgsqlFactory();
             }
         }
 
@@ -543,7 +551,7 @@ namespace DbHelper
         private DbConnection GetDbConnection()
         {
             var connection = DbProvider.CreateConnection();
-            
+
             connection.ConnectionString = ConnectionStr;
             return connection;
         }

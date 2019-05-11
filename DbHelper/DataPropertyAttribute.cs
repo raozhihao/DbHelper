@@ -11,6 +11,11 @@ namespace DbHelper
         /// 数据库原始字段名称
         /// </summary>
         public string DataName { get; set; }
+
+        /// <summary>
+        /// 确定自定义类属性映射到数据库字段上的名称
+        /// </summary>
+        /// <param name="dataName">对应数据库字段上的名称</param>
         public DataPropertyAttribute(string dataName)
         {
             this.DataName = dataName.ToLower();

@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\DbHelper.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -78,10 +79,7 @@
     <Compile Include="DataPropertyAttribute.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="docClass\doc.cs" />
-    <Compile Include="Factory\DataBaseType.cs" />
-    <Compile Include="Factory\NpgsqlFactory.cs" />
-    <Compile Include="Factory\OracleFactory.cs" />
-    <Compile Include="Factory\SqlServerFactory.cs" />
+    <Compile Include="DataBaseType.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
