@@ -140,6 +140,21 @@
             数据源适配对象
             </summary>
         </member>
+        <member name="F:DbHelper.DbContext.connection">
+            <summary>
+            数据库连接对象
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbContext.command">
+            <summary>
+            数据库命令对象
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbContext.transCommand">
+            <summary>
+            事务命令对象
+            </summary>
+        </member>
         <member name="P:DbHelper.DbContext.ConnectionStr">
             <summary>
             连接字符串
@@ -183,6 +198,12 @@
             </summary>
             <param name="stringBuilder"></param>
         </member>
+        <member name="M:DbHelper.DbContext.ChangeConnectionStr(System.String)">
+            <summary>
+            更改连接字符串
+            </summary>
+            <param name="newConnectionStr"></param>
+        </member>
         <member name="M:DbHelper.DbContext.AddParameter(System.Data.Common.DbParameter)">
             <summary>
             添加参数
@@ -195,7 +216,7 @@
             </summary>
             <param name="parameter"></param>
         </member>
-        <member name="M:DbHelper.DbContext.AddParameters(System.Collections.Generic.IEnumerable{System.Data.Common.DbParameter})">
+        <member name="M:DbHelper.DbContext.AddParameters(System.Data.Common.DbParameter[])">
             <summary>
             添加参数集合
             </summary>
@@ -253,7 +274,7 @@
             </summary>
             <param name="query">sql语句</param>
             <param name="dt">需要更新的表</param>
-            <param name="SetAllValues">指定 update 语句中是包含所有列值还是仅包含更改的列值。</param>
+            <param name="setAllValues">指定 update 语句中是包含所有列值还是仅包含更改的列值。</param>
             <param name="conflictOption">指定将如何检测和解决对数据源的相互冲突的更改。</param>
             <returns>对表进行更新操作</returns>
         </member>
@@ -290,16 +311,25 @@
             回滚事务
             </summary>
         </member>
-        <member name="M:DbHelper.DbContext.CreateTransCommand(System.String)">
+        <member name="M:DbHelper.DbContext.SetCommand(System.String,System.Data.CommandType)">
             <summary>
-            创建一个事务适配器
+            设置Command对象的一些值
             </summary>
+            <param name="query"></param>
+            <param name="text"></param>
         </member>
         <member name="M:DbHelper.DbContext.RegisterDb(System.String)">
             <summary>
             注册数据库对象
             </summary>
             <param name="selectName"></param>
+        </member>
+        <member name="M:DbHelper.DbContext.SetTransCommand(System.String,System.Data.CommandType)">
+            <summary>
+            设置事务属性
+            </summary>
+            <param name="sql"></param>
+            <param name="commandType"></param>
         </member>
         <member name="M:DbHelper.DbContext.GetObjectInfo``1(System.Data.DataTable,System.Int32)">
             <summary>
@@ -310,25 +340,11 @@
             <param name="index">当前需要获取的表中的行索引</param>
             <returns></returns>
         </member>
-        <member name="M:DbHelper.DbContext.GetDbCommand(System.String,System.Data.CommandType)">
-            <summary>
-            获取DbCommand对象
-            </summary>
-            <param name="query">sql语句</param>
-            <param name="commandType">指定如何解释命令字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:DbHelper.DbContext.GetDbConnection">
-            <summary>
-            获取DbConnection
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:DbHelper.DbContext.DisposeCommand(System.Data.Common.DbCommand)">
+        <member name="M:DbHelper.DbContext.Dispose(System.Boolean)">
             <summary>
             释放资源
             </summary>
-            <param name="command"></param>
+            <param name="disposing"></param>
         </member>
         <member name="T:DbHelper.DataBaseType">
             <summary>

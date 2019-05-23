@@ -16,7 +16,7 @@ namespace SimpleDemo
             object obj;
 
 
-            /////======   创建表  ==========
+            ///======   创建表  ==========
             //string createTable = "CREATE TABLE TESTDEMO(TID SERIAL PRIMARY KEY,TNAME VARCHAR,TINT INT)";
             //re = dbContext.ExecuteNonQuery(createTable);
             //if (re)
@@ -24,27 +24,39 @@ namespace SimpleDemo
             //else
             //    Console.WriteLine("创建表失败:" + dbContext.ErroMsg);
 
+            /////==删除表数据
+            //query = "DELETE TESTDEMO WHERE TID>@TID";
+            //dbContext.AddParameter(new ParameterHelper("TID", 6));
+            //dbContext.ExecuteNonQuery(query);
 
-            /////======= 向表中插入数据 ======
-            //query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
-            //dbContext.AddParameter(new ParameterHelper("TNAME", "demo1"));
-            //dbContext.AddParameter(new ParameterHelper("INT", 111));
-            //re = dbContext.ExecuteNonQuery(query);
+            ///======= 向表中插入数据 ======
+            query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
+            var par1 = new ParameterHelper("TNAME", "AAA");
+            var par2 = new ParameterHelper("INT", 444);
+            dbContext.AddParameters(par1, par2);
+            re = dbContext.ExecuteNonQuery(query);
+
+            //释放资源
+            dbContext.Dispose();
+
+            //dbContext.AddParameter(new ParameterHelper("TNAME", "D2"));
+            //dbContext.AddParameter(new ParameterHelper("INT", 333));
+            //dbContext.ExecuteNonQuery(query);
             //if (re)
             //    Console.WriteLine("插入成功");
             //else
             //    Console.WriteLine("插入失败:" + dbContext.ErroMsg);
 
-            /////======= 向表中获取数据 ======
-            //query = "SELECT COUNT(1) FROM TESTDEMO WHERE TINT=@INT";
-            //dbContext.AddParameter(new ParameterHelper("INT", 111));
-            //obj = dbContext.ExcuteSacler(query);
-            //Console.WriteLine("查询成功,返回:" + obj.ToString());
+            ///======= 向表中获取数据 ======
+            query = "SELECT COUNT(1) FROM TESTDEMO WHERE TINT=@INT";
+            dbContext.AddParameter(new ParameterHelper("INT", 111));
+            obj = dbContext.ExcuteSacler(query);
+            Console.WriteLine("查询成功,返回:" + obj.ToString());
 
             //////====== 获取表 =======
-            //query = "SELECT * FROM TESTDEMO";
-            //var table = dbContext.GetDataTable(query, "TestDemo");
-            //PrintTable(table);
+            query = "SELECT * FROM TESTDEMO";
+            var table = dbContext.GetDataTable(query, "TestDemo");
+            PrintTable(table);
 
             /////===== 修改表 =======
             //table.Rows[0][1] = "hehe";
@@ -63,8 +75,35 @@ namespace SimpleDemo
             //query = "SELECT * FROM TESTDEMO";
             //var list = dbContext.GetList<Test>(query);
             //PrintList(list);
+             dbContext.Dispose();
 
-            
+
+            ////==事务
+            //using (DbContext dbContext = new DbContext("Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;", DataBaseType.PostgreSql))
+            //{
+            //   string query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
+            //    dbContext.AddParameter(new ParameterHelper("TNAME", "5555"));
+            //    dbContext.AddParameter(new ParameterHelper("INT", 333));
+            //   bool re= dbContext.TransactionAdd(query);
+            //    if(re)
+            //    {
+            //        query = "UPDATE TESTDEMO SET TNAME=@TNAME WHERE TID=@TID";
+            //        dbContext.AddParameter(new ParameterHelper("TNAME", "UPDATE"));
+            //        dbContext.AddParameter(new ParameterHelper("TID", 1));
+            //        re=dbContext.TransactionAdd(query);
+            //    }
+
+            //    if (re)
+            //    {
+            //        dbContext.TransctionCommit();
+            //        Console.WriteLine("success!");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(dbContext.ErroMsg);
+            //        dbContext.TransctionRollBack();
+            //    }
+            //}
 
             Console.ReadKey();
         }
