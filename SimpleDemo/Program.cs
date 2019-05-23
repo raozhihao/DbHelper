@@ -49,7 +49,7 @@ namespace SimpleDemo
 
             ///======= 向表中获取数据 ======
             ///更改数据库
-            dbContext.ChangeConnectionStr(new DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder("192.168.18.136","5866","typhoto","typhoto","123456"));
+            dbContext.ChangeConnectionStr("Server=192.168.18.136;Port=5866;Database=typhoto;User Id=typhoto;Password=123456;");
             query = "SELECT COUNT(1) FROM TEST";
             
             obj = dbContext.ExcuteSacler(query);

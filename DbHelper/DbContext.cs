@@ -128,11 +128,7 @@ namespace DbHelper
         /// <param name="stringBuilder"></param>
         public void ChangeConnectionStr(DbConnectionStringBuilder stringBuilder)
         {
-            if (connection.State == ConnectionState.Open)
-            {
-                connection.Close();
-            }
-            connection.ConnectionString = stringBuilder.ToString();
+            ChangeConnectionStr(stringBuilder.ToString());
         }
 
         /// <summary>
@@ -141,6 +137,10 @@ namespace DbHelper
         /// <param name="newConnectionStr"></param>
         public void ChangeConnectionStr(string newConnectionStr)
         {
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+            }
             connection.ConnectionString = newConnectionStr;
         }
 
