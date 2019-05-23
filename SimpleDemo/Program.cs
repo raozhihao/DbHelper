@@ -37,7 +37,7 @@ namespace SimpleDemo
             re = dbContext.ExecuteNonQuery(query);
 
             //释放资源
-            dbContext.Dispose();
+            // dbContext.Dispose();
 
             //dbContext.AddParameter(new ParameterHelper("TNAME", "D2"));
             //dbContext.AddParameter(new ParameterHelper("INT", 333));
@@ -48,14 +48,16 @@ namespace SimpleDemo
             //    Console.WriteLine("插入失败:" + dbContext.ErroMsg);
 
             ///======= 向表中获取数据 ======
-            query = "SELECT COUNT(1) FROM TESTDEMO WHERE TINT=@INT";
-            dbContext.AddParameter(new ParameterHelper("INT", 111));
+            ///更改数据库
+            dbContext.ChangeConnectionStr(new DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder("192.168.18.136","5866","typhoto","typhoto","123456"));
+            query = "SELECT COUNT(1) FROM TEST";
+            
             obj = dbContext.ExcuteSacler(query);
             Console.WriteLine("查询成功,返回:" + obj.ToString());
 
             //////====== 获取表 =======
             query = "SELECT * FROM TESTDEMO";
-            var table = dbContext.GetDataTable(query, "TestDemo");
+            re = dbContext.GetDataTable(query,out DataTable table, "TestDemo");
             PrintTable(table);
 
             /////===== 修改表 =======
@@ -72,10 +74,10 @@ namespace SimpleDemo
             //}
 
             /////===== 获取强类型集合 =======
-            //query = "SELECT * FROM TESTDEMO";
-            //var list = dbContext.GetList<Test>(query);
-            //PrintList(list);
-             dbContext.Dispose();
+            query = "SELECT * FROM TESTDEMO";
+            re = dbContext.GetList<Test>(query,out List<Test> list);
+            PrintList(list);
+            dbContext.Dispose();
 
 
             ////==事务

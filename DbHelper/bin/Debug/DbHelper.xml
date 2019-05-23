@@ -252,7 +252,7 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns>返回调用之后的返回值</returns>
         </member>
-        <member name="M:DbHelper.DbContext.GetDataTable(System.String,System.String)">
+        <member name="M:DbHelper.DbContext.GetDataTable(System.String,System.Data.DataTable@,System.String)">
             <summary>
             获取数据表
             </summary>
@@ -278,7 +278,7 @@
             <param name="conflictOption">指定将如何检测和解决对数据源的相互冲突的更改。</param>
             <returns>对表进行更新操作</returns>
         </member>
-        <member name="M:DbHelper.DbContext.GetList``1(System.String)">
+        <member name="M:DbHelper.DbContext.GetList``1(System.String,System.Collections.Generic.List{``0}@)">
             <summary>
             获取指定对象集合
             </summary>

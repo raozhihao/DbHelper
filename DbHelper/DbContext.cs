@@ -11,10 +11,10 @@ namespace DbHelper
     /// <summary>
     /// 提供对数据库访问的上下文类
     /// </summary>
-    public class DbContext:IDisposable
+    public class DbContext : IDisposable
     {
         #region 私有字段
-        
+
 
         /// <summary>
         /// 存储参数
@@ -35,7 +35,7 @@ namespace DbHelper
         /// 数据库命令对象
         /// </summary>
         private DbCommand command;
-        
+
         private DbDataAdapter adapter;
 
         /// <summary>
@@ -76,10 +76,10 @@ namespace DbHelper
                     RegisterDb(selectName);
                     break;
                 case DataBaseType.SqlServer:
-                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance; 
+                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance;
                     break;
                 case DataBaseType.Oracle:
-                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance; 
+                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance;
                     break;
                 case DataBaseType.PostgreSql:
                     DbProvider = Npgsql.NpgsqlFactory.Instance;
@@ -88,7 +88,7 @@ namespace DbHelper
 
             connection = DbProvider.CreateConnection();
             connection.ConnectionString = ConnectionStr;
-           
+
             parameters = new List<DbParameter>();
             ParameterHelper.RegisterDbProvider(DbProvider);
         }
@@ -128,6 +128,10 @@ namespace DbHelper
         /// <param name="stringBuilder"></param>
         public void ChangeConnectionStr(DbConnectionStringBuilder stringBuilder)
         {
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+            }
             connection.ConnectionString = stringBuilder.ToString();
         }
 
@@ -137,7 +141,6 @@ namespace DbHelper
         /// <param name="newConnectionStr"></param>
         public void ChangeConnectionStr(string newConnectionStr)
         {
-            //this.ConnectionStr = stringBuilder.ToString();
             connection.ConnectionString = newConnectionStr;
         }
 
@@ -255,33 +258,34 @@ namespace DbHelper
         /// <param name="query">sql语句</param>
         /// <param name="tableName">设置查询出来的表名称</param>
         /// <returns></returns>
-        public DataTable GetDataTable(string query, string tableName = "")
+        public bool GetDataTable(string query, out DataTable dt, string tableName = "")
         {
-            DataTable dt = new DataTable(tableName);
+            dt = new DataTable(tableName);
             try
             {
                 SetCommand(query, CommandType.Text);
-                if (adapter==null)
+                if (adapter == null)
                 {
                     adapter = DbProvider.CreateDataAdapter();
                 }
                 adapter.SelectCommand = command;
 
                 adapter.Fill(dt);
+                return true;
             }
             catch (Exception ex)
             {
                 ErroMsg = ex.Message;
+                return false;
             }
             finally
             {
                 parameters.Clear();
             }
-           
-            return dt;
+
         }
 
-      
+
 
         /// <summary>
         /// 更新表格
@@ -328,26 +332,33 @@ namespace DbHelper
         /// <typeparam name="T">需要获取的对象</typeparam>
         /// <param name="sql">sql语句</param>
         /// <returns></returns>
-        public List<T> GetList<T>(string sql)
+        public bool GetList<T>(string sql,out List<T> values)
         {
-            List<T> values = new List<T>();
+            values = new List<T>();
             try
             {
                 T t = default(T);
-                DataTable dt = GetDataTable(sql);
+                DataTable dt;
+                bool re = GetDataTable(sql, out dt,typeof(T).Name);
+                if (!re)
+                {
+                    return false;
+                }
+
                 int count = dt.Rows.Count;
                 for (int i = 0; i < count; i++)
                 {
                     t = GetObjectInfo<T>(dt, i);
                     values.Add(t);
                 }
+                return true;
             }
             catch (Exception ex)
             {
                 ErroMsg = ex.Message;
+                return false;
             }
-
-            return values;
+            
         }
 
         /// <summary>
@@ -410,7 +421,7 @@ namespace DbHelper
             }
         }
 
-        
+
         /// <summary>
         /// 提交事务
         /// </summary>
@@ -444,7 +455,7 @@ namespace DbHelper
         /// <param name="text"></param>
         private void SetCommand(string query, CommandType text)
         {
-            if (command==null)
+            if (command == null)
             {
                 command = DbProvider.CreateCommand();
                 command.Connection = connection;
@@ -558,7 +569,7 @@ namespace DbHelper
             return t;
         }
 
-       
+
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
 
@@ -574,7 +585,7 @@ namespace DbHelper
                 {
                     // TODO: 释放托管状态(托管对象)。
                     parameters.Clear();
-                    
+
                     ErroMsg = null;
                 }
 
