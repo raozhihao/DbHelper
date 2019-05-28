@@ -15,6 +15,7 @@ namespace SimpleDemo
             bool re = false;
             object obj;
 
+            #region MyRegion
 
             ///======   创建表  ==========
             //string createTable = "CREATE TABLE TESTDEMO(TID SERIAL PRIMARY KEY,TNAME VARCHAR,TINT INT)";
@@ -30,11 +31,11 @@ namespace SimpleDemo
             //dbContext.ExecuteNonQuery(query);
 
             ///======= 向表中插入数据 ======
-            query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
-            var par1 = new ParameterHelper("TNAME", "AAA");
-            var par2 = new ParameterHelper("INT", 444);
-            dbContext.AddParameters(par1, par2);
-            re = dbContext.ExecuteNonQuery(query);
+            //query = "INSERT INTO TESTDEMO(TNAME,TINT) VALUES(@TNAME,@INT)";
+            //var par1 = new ParameterHelper("TNAME", "AAA");
+            //var par2 = new ParameterHelper("INT", 444);
+            //dbContext.AddParameters(par1, par2);
+            //re = dbContext.ExecuteNonQuery(query);
 
             //释放资源
             // dbContext.Dispose();
@@ -49,16 +50,16 @@ namespace SimpleDemo
 
             ///======= 向表中获取数据 ======
             ///更改数据库
-            dbContext.ChangeConnectionStr("Server=192.168.18.136;Port=5866;Database=typhoto;User Id=typhoto;Password=123456;");
-            query = "SELECT COUNT(1) FROM TEST";
-            
-            obj = dbContext.ExcuteSacler(query);
-            Console.WriteLine("查询成功,返回:" + obj.ToString());
+            //dbContext.ChangeConnectionStr("Server=192.168.18.136;Port=5866;Database=typhoto;User Id=typhoto;Password=123456;");
+            //query = "SELECT COUNT(1) FROM TEST";
 
-            //////====== 获取表 =======
-            query = "SELECT * FROM TESTDEMO";
-            re = dbContext.GetDataTable(query,out DataTable table, "TestDemo");
-            PrintTable(table);
+            //obj = dbContext.ExcuteSacler(query);
+            //Console.WriteLine("查询成功,返回:" + obj.ToString());
+
+            ////////====== 获取表 =======
+            //query = "SELECT * FROM TESTDEMO";
+            //re = dbContext.GetDataTable(query,out DataTable table, "TestDemo");
+            //PrintTable(table);
 
             /////===== 修改表 =======
             //table.Rows[0][1] = "hehe";
@@ -74,10 +75,10 @@ namespace SimpleDemo
             //}
 
             /////===== 获取强类型集合 =======
-            query = "SELECT * FROM TESTDEMO";
-            re = dbContext.GetList<Test>(query,out List<Test> list);
-            PrintList(list);
-            dbContext.Dispose();
+            //query = "SELECT * FROM TESTDEMO";
+            //re = dbContext.GetList<Test>(query,out List<Test> list);
+            //PrintList(list);
+            //dbContext.Dispose();
 
 
             ////==事务
@@ -105,8 +106,31 @@ namespace SimpleDemo
             //        Console.WriteLine(dbContext.ErroMsg);
             //        dbContext.TransctionRollBack();
             //    }
-            //}
+            //} 
+            #endregion
 
+            //获取强类型集合
+            dbContext.GetList<Test>("SELECT * FROM TEST", out List<Test> list);
+            //将强类型集合转换成DataTable
+            DataTable dt = dbContext.ToDataTable(list);
+
+
+            //获取DataTable
+            dbContext.GetDataTable("SELECT * FROM TEST", out DataTable dt2);
+            //将DataTable转成强类型集合
+            var list2 = dbContext.ToList<Test>(dt2);
+
+
+            //DataTable dt = dbContext.ToDataTable(list2);
+
+            //List<Test> list = new List<Test>()
+            //{
+            //    new Test(){ Tid=1},
+            //    new Test(){ Tid=1, Tint=1},
+            //    new Test(){ Tid=1, Tname="aa"},
+            //    new Test(){ Tid=1, Tname="bbb", Tint=3},
+            //};
+            //DataTable dt2 = dbContext.ToDataTable(list);
             Console.ReadKey();
         }
 
@@ -123,7 +147,7 @@ namespace SimpleDemo
             int i = 1;
             foreach (DataRow row in table.Rows)
             {
-                string str = "行" + i+"\t";
+                string str = "行" + i + "\t";
                 foreach (DataColumn col in table.Columns)
                 {
                     str += row[col].ToString() + "\t";

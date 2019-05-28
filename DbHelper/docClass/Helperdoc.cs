@@ -2,8 +2,15 @@
 
 namespace DbHelper.docClass
 {
-    public class doc
+    /// <summary>
+    /// 帮助文档
+    /// </summary>
+    public class Helperdoc
     {
+        /// <summary>
+        /// 开始
+        /// </summary>
+        /// <returns></returns>
         public static string GetStart()
         {
             return "开始之前,要知道此项目只是一个简单的DbHelper,有三种可以实例化的方式," + Environment.NewLine

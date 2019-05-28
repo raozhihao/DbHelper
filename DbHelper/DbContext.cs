@@ -1,9 +1,11 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Reflection;
 
 namespace DbHelper
@@ -253,10 +255,11 @@ namespace DbHelper
         }
 
         /// <summary>
-        /// 获取数据表
+        /// 获取DataTable
         /// </summary>
-        /// <param name="query">sql语句</param>
-        /// <param name="tableName">设置查询出来的表名称</param>
+        /// <param name="query">sql查询语句</param>
+        /// <param name="dt">返回的数据集</param>
+        /// <param name="tableName">为数据集命名</param>
         /// <returns></returns>
         public bool GetDataTable(string query, out DataTable dt, string tableName = "")
         {
@@ -331,34 +334,56 @@ namespace DbHelper
         /// </summary>
         /// <typeparam name="T">需要获取的对象</typeparam>
         /// <param name="sql">sql语句</param>
+        /// <param name="values">返回的强类型集合</param>
         /// <returns></returns>
         public bool GetList<T>(string sql,out List<T> values)
         {
             values = new List<T>();
+            DataTable dt;
+            bool re = GetDataTable(sql, out dt,typeof(T).Name);
+            if (re)
+            {
+                try
+                {
+                     values = ToList<T>(dt);
+                }
+                catch (Exception ex)
+                {
+                    ErroMsg = ex.Message;
+                    re = false;
+                }
+            }
+
+            return re;  
+        }
+
+        /// <summary>
+        /// 根据DataTable创建一个强类型对象集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dt"></param>
+        /// <returns>如果失败,将返回null</returns>
+        public  List<T> ToList<T>(DataTable dt)
+        {
+           List<T> values = new List<T>();
+         
             try
             {
                 T t = default(T);
-                DataTable dt;
-                bool re = GetDataTable(sql, out dt,typeof(T).Name);
-                if (!re)
-                {
-                    return false;
-                }
-
+               
                 int count = dt.Rows.Count;
                 for (int i = 0; i < count; i++)
                 {
                     t = GetObjectInfo<T>(dt, i);
                     values.Add(t);
                 }
-                return true;
             }
             catch (Exception ex)
             {
                 ErroMsg = ex.Message;
-                return false;
+                values = null;
             }
-            
+            return values;
         }
 
         /// <summary>
@@ -393,6 +418,34 @@ namespace DbHelper
                 reader.Close();
             }
             return values;
+        }
+
+        /// <summary>
+        /// 将集合对象转为DataTable
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="collection">对象集合</param>
+        /// <returns></returns>
+        public DataTable ToDataTable<T>(IEnumerable<T> collection)
+        {
+            var props = typeof(T).GetProperties();
+            var dt = new DataTable();
+            dt.Columns.AddRange(props.Select(p => new DataColumn(p.Name, p.PropertyType)).ToArray());
+            if (collection.Count() > 0)
+            {
+                for (int i = 0; i < collection.Count(); i++)
+                {
+                    ArrayList tempList = new ArrayList();
+                    foreach (PropertyInfo pi in props)
+                    {
+                        object obj = pi.GetValue(collection.ElementAt(i), null);
+                        tempList.Add(obj);
+                    }
+                    object[] array = tempList.ToArray();
+                    dt.LoadDataRow(array, true);
+                }
+            }
+            return dt;
         }
 
         /// <summary>
@@ -607,6 +660,9 @@ namespace DbHelper
         // }
 
         // 添加此代码以正确实现可处置模式。
+        /// <summary>
+        /// 释放对应资源
+        /// </summary>
         public void Dispose()
         {
             // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。

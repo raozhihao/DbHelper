@@ -29,8 +29,16 @@
             base.Pwd = password;
             this.UseLocal = useLocal;
         }
+
+        /// <summary>
+        /// 构造器
+        /// </summary>
         public SqlServerConStrBuilder() { }
 
+        /// <summary>
+        /// 返回对应的字符串类型
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (UseLocal)

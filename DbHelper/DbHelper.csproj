@@ -15,6 +15,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,7 +79,7 @@
     <Compile Include="ConnectionStrBuilder\SqlServerConStrBuilder.cs" />
     <Compile Include="DataPropertyAttribute.cs" />
     <Compile Include="DbContext.cs" />
-    <Compile Include="docClass\doc.cs" />
+    <Compile Include="docClass\Helperdoc.cs" />
     <Compile Include="DataBaseType.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -30,7 +30,15 @@
             base.Pwd = password;
             this.Port = port;
         }
+
+        /// <summary>
+        /// 构造器
+        /// </summary>
         public PostgreSqlConStrBuilder() { }
+        /// <summary>
+        /// 返回对象的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"Server={base.Host};Port={this.Port};Database={this.DataBase};User Id={base.Uid};Password={base.Pwd};";

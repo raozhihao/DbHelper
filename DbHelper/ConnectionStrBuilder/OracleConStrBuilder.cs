@@ -19,7 +19,9 @@ namespace DbHelper.ConnectionStrBuilder
         /// 数据库端口号
         /// </summary>
         public new string Port { get; set; }
-
+        /// <summary>
+        /// 构造函数 
+        /// </summary>
         public OracleConStrBuilder()
         {
 
@@ -42,7 +44,10 @@ namespace DbHelper.ConnectionStrBuilder
             this.Port = port;
         }
 
-
+        /// <summary>
+        /// 返回对象的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={base.Host})(PORT={this.Port})))(CONNECT_DATA=(sid ={this.Sid})));User Id={base.Uid};Password={base.Pwd}";
