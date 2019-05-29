@@ -10,10 +10,10 @@ namespace SimpleDemo
         static void Main(string[] args)
         {
             ///==== 实例化DbContext ====
-            DbContext dbContext = new DbContext("Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;", DataBaseType.PostgreSql);
-            string query;
-            bool re = false;
-            object obj;
+            //DbContext dbContext = new DbContext("Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;", DataBaseType.PostgreSql);
+            //string query;
+            //bool re = false;
+            //object obj;
 
             #region MyRegion
 
@@ -109,16 +109,16 @@ namespace SimpleDemo
             //} 
             #endregion
 
-            //获取强类型集合
-            dbContext.GetList<Test>("SELECT * FROM TEST", out List<Test> list);
-            //将强类型集合转换成DataTable
-            DataTable dt = dbContext.ToDataTable(list);
+            ////获取强类型集合
+            //dbContext.GetList<Test>("SELECT * FROM TEST", out List<Test> list);
+            ////将强类型集合转换成DataTable
+            //DataTable dt = dbContext.ToDataTable(list);
 
 
-            //获取DataTable
-            dbContext.GetDataTable("SELECT * FROM TEST", out DataTable dt2);
-            //将DataTable转成强类型集合
-            var list2 = dbContext.ToList<Test>(dt2);
+            ////获取DataTable
+            //dbContext.GetDataTable("SELECT * FROM TEST", out DataTable dt2);
+            ////将DataTable转成强类型集合
+            //var list2 = dbContext.ToList<Test>(dt2);
 
 
             //DataTable dt = dbContext.ToDataTable(list2);
@@ -131,6 +131,16 @@ namespace SimpleDemo
             //    new Test(){ Tid=1, Tname="bbb", Tint=3},
             //};
             //DataTable dt2 = dbContext.ToDataTable(list);
+
+
+            #region 使用Sqlserver
+
+            DbContext context = new DbContext("Data Source=.;Initial Catalog=TEST;Integrated Security=True", DataBaseType.SqlServer);
+            string query = "SELECT * FROM TEST WHERE TID <= @TID";
+            context.AddParameter(new System.Data.SqlClient.SqlParameter("@TID", 4));
+            context.GetDataTable(query, out DataTable dt, "TEST");
+
+            #endregion
             Console.ReadKey();
         }
 

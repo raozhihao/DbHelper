@@ -147,7 +147,7 @@ namespace DbHelper
         }
 
         /// <summary>
-        /// 添加参数
+        /// 添加参数,请使用当前确切的参数类型
         /// </summary>
         /// <param name="parameter">参数对象</param>
         public void AddParameter(DbParameter parameter)
@@ -336,25 +336,19 @@ namespace DbHelper
         /// <param name="sql">sql语句</param>
         /// <param name="values">返回的强类型集合</param>
         /// <returns></returns>
-        public bool GetList<T>(string sql,out List<T> values)
+        public bool GetList<T>(string sql, out List<T> values)
         {
             values = new List<T>();
             DataTable dt;
-            bool re = GetDataTable(sql, out dt,typeof(T).Name);
+            bool re = GetDataTable(sql, out dt, typeof(T).Name);
             if (re)
             {
-                try
-                {
-                     values = ToList<T>(dt);
-                }
-                catch (Exception ex)
-                {
-                    ErroMsg = ex.Message;
-                    re = false;
-                }
+
+                values = ToList<T>(dt);
+                re = values != null;
             }
 
-            return re;  
+            return re;
         }
 
         /// <summary>
@@ -363,14 +357,14 @@ namespace DbHelper
         /// <typeparam name="T"></typeparam>
         /// <param name="dt"></param>
         /// <returns>如果失败,将返回null</returns>
-        public  List<T> ToList<T>(DataTable dt)
+        public List<T> ToList<T>(DataTable dt)
         {
-           List<T> values = new List<T>();
-         
+            List<T> values = new List<T>();
+
             try
             {
                 T t = default(T);
-               
+
                 int count = dt.Rows.Count;
                 for (int i = 0; i < count; i++)
                 {
@@ -420,6 +414,7 @@ namespace DbHelper
             return values;
         }
 
+       
         /// <summary>
         /// 将集合对象转为DataTable
         /// </summary>

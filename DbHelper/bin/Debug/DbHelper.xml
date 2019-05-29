@@ -239,7 +239,7 @@
         </member>
         <member name="M:DbHelper.DbContext.AddParameter(System.Data.Common.DbParameter)">
             <summary>
-            添加参数
+            添加参数,请使用当前确切的参数类型
             </summary>
             <param name="parameter">参数对象</param>
         </member>
