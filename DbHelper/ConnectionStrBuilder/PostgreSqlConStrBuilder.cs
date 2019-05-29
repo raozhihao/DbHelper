@@ -38,7 +38,7 @@
         /// <summary>
         /// 返回对象的字符串
         /// </summary>
-        /// <returns></returns>
+        /// <returns>返回对象的字符串</returns>
         public override string ToString()
         {
             return $"Server={base.Host};Port={this.Port};Database={this.DataBase};User Id={base.Uid};Password={base.Pwd};";

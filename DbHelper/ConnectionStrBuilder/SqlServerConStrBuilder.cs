@@ -38,7 +38,7 @@
         /// <summary>
         /// 返回对应的字符串类型
         /// </summary>
-        /// <returns></returns>
+        /// <returns>返回对象的字符串</returns>
         public override string ToString()
         {
             if (UseLocal)

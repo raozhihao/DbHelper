@@ -10,7 +10,7 @@ namespace DbHelper.docClass
         /// <summary>
         /// 开始
         /// </summary>
-        /// <returns></returns>
+        /// <returns>返回文档描述字符串</returns>
         public static string GetStart()
         {
             return "开始之前,要知道此项目只是一个简单的DbHelper,有三种可以实例化的方式," + Environment.NewLine

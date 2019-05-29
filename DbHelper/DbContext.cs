@@ -8,6 +8,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 
+
 namespace DbHelper
 {
     /// <summary>
@@ -92,7 +93,6 @@ namespace DbHelper
             connection.ConnectionString = ConnectionStr;
 
             parameters = new List<DbParameter>();
-            ParameterHelper.RegisterDbProvider(DbProvider);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace DbHelper
         /// <summary>
         /// 更改连接字符串
         /// </summary>
-        /// <param name="stringBuilder"></param>
+        /// <param name="stringBuilder">连接字符串对象</param>
         public void ChangeConnectionStr(DbConnectionStringBuilder stringBuilder)
         {
             ChangeConnectionStr(stringBuilder.ToString());
@@ -136,7 +136,7 @@ namespace DbHelper
         /// <summary>
         /// 更改连接字符串
         /// </summary>
-        /// <param name="newConnectionStr"></param>
+        /// <param name="newConnectionStr">新连接字符串</param>
         public void ChangeConnectionStr(string newConnectionStr)
         {
             if (connection.State == ConnectionState.Open)
@@ -152,25 +152,37 @@ namespace DbHelper
         /// <param name="parameter">参数对象</param>
         public void AddParameter(DbParameter parameter)
         {
-            DbParameter par = parameter;
-            if (parameter is ParameterHelper)
+            this.parameters.Add(parameter);
+        }
+        
+        /// <summary>
+        /// 创建参数对象集合
+        /// </summary>
+        /// <param name="list">参数对象集合</param>
+        public void CreateParameters(IEnumerable<ParameterHelper> list)
+        {
+            if (list==null)
             {
-                //获取其确切类型
-                par = ((ParameterHelper)parameter).GetDbParameter();
+                return;
             }
-            this.parameters.Add(par);
+           
+            foreach (var item in list)
+            {
+                AddParameter(item.Name,item.Value);
+            }
         }
 
         /// <summary>
-        /// 提供最简单的参数化添加
+        /// 添加参数
         /// </summary>
-        /// <param name="parameter"></param>
-        public void AddParameter(ParameterHelper parameter)
+        /// <param name="name">参数名</param>
+        /// <param name="value">参数值</param>
+        public void AddParameter(string name,object value)
         {
-            //这里一定是要加入其父类,这里的parameter传进来的确切类型为ParameterHelper
-            //但DbContext需要的却是其确切的类型,例如SqlParameter
-            //所以这里使用ParameterHelper对象的GetDbParameter()方法获取其映射的确切类型
-            this.parameters.Add(parameter.GetDbParameter());
+            var par = DbProvider.CreateParameter();
+            par.ParameterName = name;
+            par.Value = value;
+            this.parameters.Add(par);
         }
 
         /// <summary>
@@ -190,7 +202,7 @@ namespace DbHelper
         /// </summary>
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
-        /// <returns></returns>
+        /// <returns>返回正确与否</returns>
         public bool ExecuteNonQuery(string query, CommandType commandType = CommandType.Text)
         {
             try
@@ -215,7 +227,7 @@ namespace DbHelper
         /// </summary>
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
-        /// <returns></returns>
+        /// <returns>返回查询结果</returns>
         public object ExcuteSacler(string query, CommandType commandType = CommandType.Text)
         {
             try
@@ -260,7 +272,7 @@ namespace DbHelper
         /// <param name="query">sql查询语句</param>
         /// <param name="dt">返回的数据集</param>
         /// <param name="tableName">为数据集命名</param>
-        /// <returns></returns>
+        /// <returns>返回正确与否</returns>
         public bool GetDataTable(string query, out DataTable dt, string tableName = "")
         {
             dt = new DataTable(tableName);
@@ -295,10 +307,10 @@ namespace DbHelper
         /// </summary>
         /// <param name="query">sql语句</param>
         /// <param name="dt">需要更新的表</param>
-        /// <returns></returns>
+        /// <returns>返回正确与否</returns>
         public bool UpdateTable(string query, DataTable dt)
         {
-            return UpdateTable(query, dt, false, ConflictOption.CompareAllSearchableValues);
+            return UpdateTable(query, dt, false, ConflictOption.OverwriteChanges);
         }
 
         /// <summary>
@@ -335,12 +347,11 @@ namespace DbHelper
         /// <typeparam name="T">需要获取的对象</typeparam>
         /// <param name="sql">sql语句</param>
         /// <param name="values">返回的强类型集合</param>
-        /// <returns></returns>
+        /// <returns>返回正确与否</returns>
         public bool GetList<T>(string sql, out List<T> values)
         {
             values = new List<T>();
-            DataTable dt;
-            bool re = GetDataTable(sql, out dt, typeof(T).Name);
+            bool re = GetDataTable(sql, out DataTable dt, typeof(T).Name);
             if (re)
             {
 
@@ -384,7 +395,7 @@ namespace DbHelper
         /// 获取对象集合
         /// </summary>
         /// <param name="sql">查询语句</param>
-        /// <returns></returns>
+        /// <returns>返回对象集合</returns>
         public List<object[]> GetObjects(string sql)
         {
             DbDataReader reader = null;
@@ -420,7 +431,7 @@ namespace DbHelper
         /// </summary>
         /// <typeparam name="T">对象类型</typeparam>
         /// <param name="collection">对象集合</param>
-        /// <returns></returns>
+        /// <returns>返回一个DataTable</returns>
         public DataTable ToDataTable<T>(IEnumerable<T> collection)
         {
             var props = typeof(T).GetProperties();
@@ -448,7 +459,7 @@ namespace DbHelper
         /// </summary>
         /// <param name="sql">sql处理语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
-        /// <returns></returns>
+        /// <returns>返回正确与否</returns>
         public bool TransactionAdd(string sql, CommandType commandType = CommandType.Text)
         {
             SetTransCommand(sql);

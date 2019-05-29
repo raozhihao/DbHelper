@@ -68,7 +68,7 @@
             <summary>
             返回对象的字符串
             </summary>
-            <returns></returns>
+            <returns>返回对象的字符串</returns>
         </member>
         <member name="T:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder">
             <summary>
@@ -104,7 +104,7 @@
             <summary>
             返回对象的字符串
             </summary>
-            <returns></returns>
+            <returns>返回对象的字符串</returns>
         </member>
         <member name="T:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder">
             <summary>
@@ -140,7 +140,7 @@
             <summary>
             返回对应的字符串类型
             </summary>
-            <returns></returns>
+            <returns>返回对象的字符串</returns>
         </member>
         <member name="T:DbHelper.DataPropertyAttribute">
             <summary>
@@ -229,13 +229,13 @@
             <summary>
             更改连接字符串
             </summary>
-            <param name="stringBuilder"></param>
+            <param name="stringBuilder">连接字符串对象</param>
         </member>
         <member name="M:DbHelper.DbContext.ChangeConnectionStr(System.String)">
             <summary>
             更改连接字符串
             </summary>
-            <param name="newConnectionStr"></param>
+            <param name="newConnectionStr">新连接字符串</param>
         </member>
         <member name="M:DbHelper.DbContext.AddParameter(System.Data.Common.DbParameter)">
             <summary>
@@ -243,11 +243,18 @@
             </summary>
             <param name="parameter">参数对象</param>
         </member>
-        <member name="M:DbHelper.DbContext.AddParameter(DbHelper.ParameterHelper)">
+        <member name="M:DbHelper.DbContext.CreateParameters(System.Collections.Generic.IEnumerable{DbHelper.ParameterHelper})">
             <summary>
-            提供最简单的参数化添加
+            创建参数对象集合
             </summary>
-            <param name="parameter"></param>
+            <param name="list">参数对象集合</param>
+        </member>
+        <member name="M:DbHelper.DbContext.AddParameter(System.String,System.Object)">
+            <summary>
+            添加参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
         </member>
         <member name="M:DbHelper.DbContext.AddParameters(System.Data.Common.DbParameter[])">
             <summary>
@@ -261,7 +268,7 @@
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
-            <returns></returns>
+            <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.ExcuteSacler(System.String,System.Data.CommandType)">
             <summary>
@@ -269,7 +276,7 @@
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
-            <returns></returns>
+            <returns>返回查询结果</returns>
         </member>
         <member name="M:DbHelper.DbContext.ExcuteProcedure(System.String)">
             <summary>
@@ -292,7 +299,7 @@
             <param name="query">sql查询语句</param>
             <param name="dt">返回的数据集</param>
             <param name="tableName">为数据集命名</param>
-            <returns></returns>
+            <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.UpdateTable(System.String,System.Data.DataTable)">
             <summary>
@@ -300,7 +307,7 @@
             </summary>
             <param name="query">sql语句</param>
             <param name="dt">需要更新的表</param>
-            <returns></returns>
+            <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.UpdateTable(System.String,System.Data.DataTable,System.Boolean,System.Data.ConflictOption)">
             <summary>
@@ -319,7 +326,7 @@
             <typeparam name="T">需要获取的对象</typeparam>
             <param name="sql">sql语句</param>
             <param name="values">返回的强类型集合</param>
-            <returns></returns>
+            <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.ToList``1(System.Data.DataTable)">
             <summary>
@@ -334,7 +341,7 @@
             获取对象集合
             </summary>
             <param name="sql">查询语句</param>
-            <returns></returns>
+            <returns>返回对象集合</returns>
         </member>
         <member name="M:DbHelper.DbContext.ToDataTable``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
@@ -342,7 +349,7 @@
             </summary>
             <typeparam name="T">对象类型</typeparam>
             <param name="collection">对象集合</param>
-            <returns></returns>
+            <returns>返回一个DataTable</returns>
         </member>
         <member name="M:DbHelper.DbContext.TransactionAdd(System.String,System.Data.CommandType)">
             <summary>
@@ -350,7 +357,7 @@
             </summary>
             <param name="sql">sql处理语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
-            <returns></returns>
+            <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.TransctionCommit">
             <summary>
@@ -411,7 +418,7 @@
             <summary>
             开始
             </summary>
-            <returns></returns>
+            <returns>返回文档描述字符串</returns>
         </member>
         <member name="T:DbHelper.DataBaseType">
             <summary>
@@ -442,76 +449,31 @@
         </member>
         <member name="T:DbHelper.ParameterHelper">
             <summary>
-            参数化帮助类,提供最简单的参数化帮助
+            参数信息帮助类
+            (该类如果在DbContext未实例化之前使用,请在DbContext实例化后
+            调用DbContext.CreateParameters方法)
             </summary>
         </member>
-        <member name="M:DbHelper.ParameterHelper.GetDbParameter">
+        <member name="P:DbHelper.ParameterHelper.Name">
             <summary>
-            获取确切类型的DbParameter
+            参数名称
             </summary>
-            <returns></returns>
+        </member>
+        <member name="P:DbHelper.ParameterHelper.Value">
+            <summary>
+            参数值
+            </summary>
         </member>
         <member name="M:DbHelper.ParameterHelper.#ctor(System.String,System.Object)">
             <summary>
             构造器
             </summary>
-            <param name="name">要映射的参数的名称。</param>
-            <param name="value">设置参数的值。</param>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
         </member>
         <member name="M:DbHelper.ParameterHelper.#ctor">
             <summary>
             构造器
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.DbType">
-            <summary>
-            获取或设置参数的 System.Data.SqlDbType。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.Direction">
-            <summary>
-            获取或设置一个值，该值指示参数是只可输入的参数、只可输出的参数、双向参数还是存储过程返回值参数。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.ParameterName">
-            <summary>
-            要映射的参数的名称。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.Size">
-            <summary>
-            获取或设置列中的数据的最大大小（以字节为单位）
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.SourceColumn">
-            <summary>
-            获取或设置映射到 System.Data.DataSet 并且用于加载或返回 System.Data.SqlClient.SqlParameter.Value的源列的名称
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.SourceColumnNullMapping">
-            <summary>
-            设置或获取一个值，该值指示源列是否可以为 null。 通过此操作，System.Data.SqlClient.SqlCommandBuilder 能够为可以为
-                null 的列正确地生成 Update 语句。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.SourceVersion">
-            <summary>
-            获取或设置要在加载 System.Data.DataRowVersion 时使用的 System.Data.SqlClient.SqlParameter.Value。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.Value">
-            <summary>
-            获取或设置参数的值。
-            </summary>
-        </member>
-        <member name="P:DbHelper.ParameterHelper.IsNullable">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:DbHelper.ParameterHelper.ResetDbType">
-            <summary>
-            
             </summary>
         </member>
     </members>

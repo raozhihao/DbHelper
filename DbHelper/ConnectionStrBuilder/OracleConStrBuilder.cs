@@ -47,7 +47,7 @@ namespace DbHelper.ConnectionStrBuilder
         /// <summary>
         /// 返回对象的字符串
         /// </summary>
-        /// <returns></returns>
+        /// <returns>返回对象的字符串</returns>
         public override string ToString()
         {
             return $"Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={base.Host})(PORT={this.Port})))(CONNECT_DATA=(sid ={this.Sid})));User Id={base.Uid};Password={base.Pwd}";
