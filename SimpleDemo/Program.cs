@@ -9,6 +9,41 @@ namespace SimpleDemo
     {
         static void Main(string[] args)
         {
+
+            #region 实例化
+
+            //方式一:使用字符串 + 指定数据库形式
+            //DbContext context = new DbContext("Data Source=.;Initial Catalog=GISTwo;Integrated Security=True", DataBaseType.SqlServer);
+
+            //方式二:使用 ConnectionStrBuilder ,组件将自动识别对应数据库
+            //DbContext context = new DbContext(new SqlServerConStrBuilder(".", "GISTwo"));
+
+            //方式三:使用配置文件
+            //DbContext context = new DbContext("SqlClientProvide");
+
+            // DbProviderGlobal.Register(System.Data.SqlClient.SqlClientFactory.Instance);
+            // DbContext context = DbContext.Instance;
+            // //context.ChangeConnectionStr("Data Source=.;Initial Catalog=GISTwo;Integrated Security=True");
+            // context.ConnectionString = "Data Source=.;Initial Catalog=GISTwo;Integrated Security=True";
+            //Object obj= context.ExcuteSacler("SELECT COUNT(1) FROM GraphicsPolygon");
+
+            // context.ConnectionString = "Data Source=.;Initial Catalog=TEMP;Integrated Security=True";
+            //  Object obj2= context.ExcuteSacler("SELECT COUNT(1) FROM test");
+            // context.Dispose();
+
+
+            DbContext db = new DbContext();
+            db.SelectProviderName = "NpgsqlProvide";
+            db.ConnectionString = "Server=106.15.207.202;Port=5432;Database=postgres;User Id=postgres;Password=postgresql;";
+            var ol=db.ExcuteSacler("SELECT COUNT(1) FROM test");
+
+            
+            db.SelectProviderName = "SqlClientProvide";
+            db.ConnectionString = "Data Source=.;Initial Catalog=GISTwo;Integrated Security=True";
+            Object obj2= db.ExcuteSacler("SELECT COUNT(1) FROM GraphicsPolygon");
+            #endregion
+
+
             ///==== 实例化DbContext ====
             //DbContext dbContext = new DbContext("Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;", DataBaseType.PostgreSql);
             //string query;
@@ -135,10 +170,10 @@ namespace SimpleDemo
 
             #region 使用Sqlserver
 
-            DbContext context = new DbContext("Data Source=.;Initial Catalog=TEST;Integrated Security=True", DataBaseType.SqlServer);
-            string query = "SELECT * FROM TEST WHERE TID <= @TID";
-            context.AddParameter(new System.Data.SqlClient.SqlParameter("@TID", 4));
-            context.GetDataTable(query, out DataTable dt, "TEST");
+            //DbContext context = new DbContext("Data Source=.;Initial Catalog=GISTwo;Integrated Security=True", DataBaseType.SqlServer);
+
+            //or
+
 
             #endregion
             Console.ReadKey();

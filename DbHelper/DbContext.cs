@@ -18,7 +18,6 @@ namespace DbHelper
     {
         #region 私有字段
 
-
         /// <summary>
         /// 存储参数
         /// </summary>
@@ -39,70 +38,158 @@ namespace DbHelper
         /// </summary>
         private DbCommand command;
 
-        private DbDataAdapter adapter;
 
         /// <summary>
         /// 事务命令对象
         /// </summary>
         private DbCommand transCommand;
 
-        #endregion
-
-        #region 公共属性
+        /// <summary>
+        /// 当前选择的数据库类型
+        /// </summary>
+        private DataBaseType dbType;
 
         /// <summary>
         /// 连接字符串
         /// </summary>
-        public string ConnectionStr { get; set; }
+        private string connectionStr;
+
+        private string selectName;
+
+        #endregion
+
+        #region 公共属性
 
         /// <summary>
         /// 返回最后一次获取到的错误信息
         /// </summary>
         public string ErroMsg { get; private set; }
 
+
+        /// <summary>
+        /// 获取当前的DbConnection
+        /// </summary>
+        public DbConnection DbConnection
+        {
+            get
+            {
+                if (this.connection == null)
+                {
+                    connection = DbProvider.CreateConnection();
+                    connection.ConnectionString = connectionStr;
+                }
+                return connection;
+            }
+        }
+
+        /// <summary>
+        /// 获取当前的DbCommand
+        /// </summary>
+        public DbCommand DbCommand
+        {
+            get
+            {
+                SetCommand(null, CommandType.Text);
+                return this.command;
+            }
+        }
+
+        /// <summary>
+        /// 设置或获取连接字符串
+        /// </summary>
+        public string ConnectionString
+        {
+            get
+            {
+                return this.connectionStr;
+            }
+            set
+            {
+                if (this.connectionStr != value)
+                {
+                    this.ChangeConnectionStr(value);
+                }
+                this.connectionStr = value;
+            }
+        }
+
+        /// <summary>
+        /// 设置或获取当前选择的驱动名称
+        /// </summary>
+        public string SelectProviderName
+        {
+            get { return this.selectName; }
+            set
+            {
+                if (this.selectName != value)
+                {
+                    this.selectName = value;
+                    Register(value);
+                }
+            }
+        }
+
         #endregion
 
         #region 构造器
 
+        /// <summary>
+        /// 获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
+        /// </summary>
+        public static DbContext Instance
+        {
+            get
+            {
+                if (!DbProviderGlobal.HaveFactory)
+                {
+                    throw new ArgumentException($"未注册 DbProviderGlobal 实例,请先调用 DbProviderGlobal.Register(DbProviderFactory providerFactory)..");
+                }
+                return new DbContext("", DataBaseType.Factory);
+            }
+        }
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="connectionStr">连接字符串</param>
         /// <param name="dbType">数据库类型,默认使用app.config中的设置</param>
         /// <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        public DbContext(string connectionStr, DataBaseType dbType = DataBaseType.None, string selectName = "")
+        public DbContext(string connectionStr, DataBaseType dbType, string selectName = "")
         {
-            this.ConnectionStr = connectionStr;
-            switch (dbType)
-            {
-                case DataBaseType.None:
-                    RegisterDb(selectName);
-                    break;
-                case DataBaseType.SqlServer:
-                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance;
-                    break;
-                case DataBaseType.Oracle:
-                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance;
-                    break;
-                case DataBaseType.PostgreSql:
-                    DbProvider = Npgsql.NpgsqlFactory.Instance;
-                    break;
-            }
+            this.connectionStr = connectionStr;
+            this.dbType = dbType;
 
-            connection = DbProvider.CreateConnection();
-            connection.ConnectionString = ConnectionStr;
-
-            parameters = new List<DbParameter>();
+            Register(selectName);
         }
 
         /// <summary>
         /// 构造器
         /// </summary>
         /// <param name="conStrBuilder">连接字符串对象</param>
-        /// <param name="dbType">对应数据库类型</param>
-        /// <param name="selectName">配置文件对应数据库名称</param>
-        public DbContext(DbConnectionStringBuilder conStrBuilder, DataBaseType dbType = DataBaseType.None, string selectName = "")
-            : this(conStrBuilder.ToString(), dbType, selectName) { }
+        public DbContext(BaseConStrBuilder conStrBuilder)
+        {
+
+            if (conStrBuilder is PostgreSqlConStrBuilder)
+            {
+                dbType = DataBaseType.PostgreSql;
+            }
+            else if (conStrBuilder is OracleConStrBuilder)
+            {
+                dbType = DataBaseType.Oracle;
+            }
+            else if (conStrBuilder is SqlServerConStrBuilder)
+            {
+                dbType = DataBaseType.SqlServer;
+            }
+            else
+            {
+                dbType = DataBaseType.Config;
+            }
+
+            this.connectionStr = conStrBuilder.ToString();
+
+            Register("");
+        }
+
 
         /// <summary>
         /// 构造器
@@ -115,7 +202,7 @@ namespace DbHelper
         /// 构造函数
         /// </summary>
         /// <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        public DbContext(string selectName) : this("", DataBaseType.None, selectName)
+        public DbContext(string selectName) : this("", DataBaseType.Config, selectName)
         {
 
         }
@@ -124,11 +211,12 @@ namespace DbHelper
 
         #region 公共方法
 
+
         /// <summary>
         /// 更改连接字符串
         /// </summary>
         /// <param name="stringBuilder">连接字符串对象</param>
-        public void ChangeConnectionStr(DbConnectionStringBuilder stringBuilder)
+        public void ChangeConnectionStr(BaseConStrBuilder stringBuilder)
         {
             ChangeConnectionStr(stringBuilder.ToString());
         }
@@ -139,11 +227,18 @@ namespace DbHelper
         /// <param name="newConnectionStr">新连接字符串</param>
         public void ChangeConnectionStr(string newConnectionStr)
         {
-            if (connection.State == ConnectionState.Open)
+            try
             {
-                connection.Close();
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+                connection.ConnectionString = newConnectionStr;
             }
-            connection.ConnectionString = newConnectionStr;
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ErroMsg);
+            }
         }
 
         /// <summary>
@@ -154,21 +249,21 @@ namespace DbHelper
         {
             this.parameters.Add(parameter);
         }
-        
+
         /// <summary>
         /// 创建参数对象集合
         /// </summary>
         /// <param name="list">参数对象集合</param>
         public void CreateParameters(IEnumerable<ParameterHelper> list)
         {
-            if (list==null)
+            if (list == null)
             {
                 return;
             }
-           
+
             foreach (var item in list)
             {
-                AddParameter(item.Name,item.Value);
+                AddParameter(item.Name, item.Value);
             }
         }
 
@@ -177,13 +272,27 @@ namespace DbHelper
         /// </summary>
         /// <param name="name">参数名</param>
         /// <param name="value">参数值</param>
-        public void AddParameter(string name,object value)
+        /// <param name="direction">类型</param>
+        public void AddParameter(string name, object value,ParameterDirection direction)
         {
             var par = DbProvider.CreateParameter();
             par.ParameterName = name;
             par.Value = value;
+            par.Direction = direction;
             this.parameters.Add(par);
         }
+
+        /// <summary>
+        /// 添加参数
+        /// </summary>
+        /// <param name="name">参数名</param>
+        /// <param name="value">参数值</param>
+        public void AddParameter(string name, object value)
+        {
+           
+            this.AddParameter(name, value,ParameterDirection.Input);
+        }
+
 
         /// <summary>
         /// 添加参数集合
@@ -276,13 +385,12 @@ namespace DbHelper
         public bool GetDataTable(string query, out DataTable dt, string tableName = "")
         {
             dt = new DataTable(tableName);
+            DbDataAdapter adapter = null;
             try
             {
                 SetCommand(query, CommandType.Text);
-                if (adapter == null)
-                {
-                    adapter = DbProvider.CreateDataAdapter();
-                }
+                adapter = DbProvider.CreateDataAdapter();
+
                 adapter.SelectCommand = command;
 
                 adapter.Fill(dt);
@@ -296,6 +404,7 @@ namespace DbHelper
             finally
             {
                 parameters.Clear();
+                adapter?.Dispose();
             }
 
         }
@@ -323,9 +432,11 @@ namespace DbHelper
         /// <returns>对表进行更新操作</returns>
         public bool UpdateTable(string query, DataTable dt, bool setAllValues, ConflictOption conflictOption)
         {
+            DbDataAdapter adapter = null;
             try
             {
-                command.CommandText = query;
+                SetCommand(query, CommandType.Text);
+                adapter = DbProvider.CreateDataAdapter();
                 adapter.SelectCommand = command;
                 DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
                 builder.DataAdapter = adapter;
@@ -338,6 +449,11 @@ namespace DbHelper
             {
                 ErroMsg = ex.Message;
                 return false;
+            }
+            finally
+            {
+                this.parameters.Clear();
+                adapter?.Dispose();
             }
         }
 
@@ -409,6 +525,7 @@ namespace DbHelper
                     while (reader.Read())
                     {
                         object[] objs = new object[reader.FieldCount];
+
                         reader.GetValues(objs);
                         values.Add(objs);
                     }
@@ -425,7 +542,7 @@ namespace DbHelper
             return values;
         }
 
-       
+
         /// <summary>
         /// 将集合对象转为DataTable
         /// </summary>
@@ -503,6 +620,8 @@ namespace DbHelper
             }
         }
 
+
+
         #endregion
 
         #region 私有方法
@@ -518,6 +637,8 @@ namespace DbHelper
             {
                 command = DbProvider.CreateCommand();
                 command.Connection = connection;
+                connection.ConnectionString = this.ConnectionString;
+
             }
             if (connection.State == ConnectionState.Closed)
             {
@@ -533,27 +654,74 @@ namespace DbHelper
         }
 
         /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="selectName">配置文件对应数据库名称</param>
+        private void Register(string selectName)
+        {
+            this.selectName = selectName;
+            parameters = new List<DbParameter>();
+            bool re = true;
+            switch (this.dbType)
+            {
+                case DataBaseType.Config:
+                    re = RegisterDb(selectName);
+                    break;
+                case DataBaseType.SqlServer:
+                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance;
+                    break;
+                case DataBaseType.Oracle:
+                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance;
+                    break;
+                case DataBaseType.PostgreSql:
+                    DbProvider = Npgsql.NpgsqlFactory.Instance;
+                    break;
+                case DataBaseType.Factory:
+                    DbProvider = DbProviderGlobal.ProviderFactory;
+                    break;
+            }
+
+            if (re)
+            {
+                connection = DbProvider.CreateConnection();
+                //connection.ConnectionString = this.ConnectionString;
+                command = null;
+                transCommand = null;
+                ErroMsg = "";
+            }
+            else
+            {
+                connection = null;
+            }
+
+        }
+
+        /// <summary>
         /// 注册数据库对象
         /// </summary>
         /// <param name="selectName"></param>
-        private void RegisterDb(string selectName)
+        private bool RegisterDb(string selectName)
         {
             var provider = ConfigurationManager.ConnectionStrings[selectName];
+            if (provider == null)
+            {
+                ErroMsg = ($"没有找到名称为 {selectName} 的项,请检查..");
+                DbProvider = null;
+                return false;
+            }
             try
             {
-                if (string.IsNullOrWhiteSpace(this.ConnectionStr))
+                if (string.IsNullOrWhiteSpace(this.connectionStr))
                 {
-                    ConnectionStr = provider.ConnectionString;
+                    this.connectionStr = provider.ConnectionString;
                 }
                 string _providerName = provider.ProviderName;
                 DbProvider = DbProviderFactories.GetFactory(_providerName);
+                return true;
             }
             catch
             {
-                //如果配置文件失败,且又没有连接字符串,则在此处使用默认的PostgreSql
-                if (string.IsNullOrWhiteSpace(this.ConnectionStr))
-                    ConnectionStr = "Server=192.168.18.136;Port=5866;Database=tymap;User Id=tymap;Password=123456;";
-                DbProvider = Npgsql.NpgsqlFactory.Instance; //new NpgsqlFactory();
+                throw;
             }
         }
 
@@ -617,10 +785,45 @@ namespace DbHelper
                     {
                         //将当前的行列值设置到对象中
                         var value = dt.Rows[index][i];
+                        //获取当前列类型
+                        Type colType = dt.Columns[i].DataType;
+                        //获取当前字段类型
+                        Type itemType = item.PropertyType;
+                        //如果两个类型不一致
+                        if (colType.ToString() != itemType.ToString())
+                        {
+                            //如果值实现了IConvertible接口
+                            if (value is IConvertible)
+                            {
+                                //直接将当前值转化成用户传进来的T类型
+                                try
+                                {
+                                    value = Convert.ChangeType(value, itemType);
+                                }
+                                catch
+                                {
+
+                                    throw new FormatException($"{value} 的类型为 {colType},但在希望将其转成 {itemType} 时无法转换,请更正!");
+                                }
+
+                            }
+                            else
+                            {
+                                //没有实现,直接返回其字符串形式
+                                value = value.ToString();
+                            }
+
+                        }
+
                         if (value != DBNull.Value)
+                        {
                             item.SetValue(tobj, value, null);
+                        }
                         else
+                        {
                             item.SetValue(tobj, null, null);
+                        }
+
                     }
                 }
             }
@@ -652,7 +855,6 @@ namespace DbHelper
                 // TODO: 将大型字段设置为 null。
                 transCommand?.Dispose();
                 command?.Dispose();
-                adapter?.Dispose();
                 connection?.Close();
                 connection?.Dispose();
                 disposedValue = true;

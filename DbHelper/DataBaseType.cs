@@ -8,7 +8,12 @@
         /// <summary>
         /// 不使用任何内置配置,直接使用配置文件项
         /// </summary>
-        None,
+        Config,
+        
+        /// <summary>
+        /// 使用DbProviderFactory进行注册
+        /// </summary>
+        Factory,
 
         /// <summary>
         /// 使用内置的SqlServer

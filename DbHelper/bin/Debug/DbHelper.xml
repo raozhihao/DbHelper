@@ -4,57 +4,57 @@
         <name>DbHelper</name>
     </assembly>
     <members>
-        <member name="T:DbHelper.ConnectionStrBuilder.BaseConStrBuilder">
+        <member name="T:DbHelper.BaseConStrBuilder">
             <summary>
             提供数据库连接字符串对象的基类型
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.BaseConStrBuilder.Host">
+        <member name="P:DbHelper.BaseConStrBuilder.Host">
             <summary>
             数据库IP地址
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.BaseConStrBuilder.Port">
+        <member name="P:DbHelper.BaseConStrBuilder.Port">
             <summary>
             数据库端口号
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.BaseConStrBuilder.Uid">
+        <member name="P:DbHelper.BaseConStrBuilder.Uid">
             <summary>
             数据库用户名
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.BaseConStrBuilder.Pwd">
+        <member name="P:DbHelper.BaseConStrBuilder.Pwd">
             <summary>
             数据库密码
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.BaseConStrBuilder.DataBase">
+        <member name="P:DbHelper.BaseConStrBuilder.DataBase">
             <summary>
             连接的数据库名称
             </summary>
         </member>
-        <member name="T:DbHelper.ConnectionStrBuilder.OracleConStrBuilder">
+        <member name="T:DbHelper.OracleConStrBuilder">
             <summary>
             Oracle的数据库连接字符串对象
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.OracleConStrBuilder.Sid">
+        <member name="P:DbHelper.OracleConStrBuilder.Sid">
             <summary>
             SID
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.OracleConStrBuilder.Port">
+        <member name="P:DbHelper.OracleConStrBuilder.Port">
             <summary>
             数据库端口号
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.OracleConStrBuilder.#ctor">
+        <member name="M:DbHelper.OracleConStrBuilder.#ctor">
             <summary>
             构造函数 
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.OracleConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:DbHelper.OracleConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             构建数据库连接字符串对象
             </summary>
@@ -64,28 +64,28 @@
             <param name="password">数据库密码</param>
             <param name="sid">SID</param>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.OracleConStrBuilder.ToString">
+        <member name="M:DbHelper.OracleConStrBuilder.ToString">
             <summary>
             返回对象的字符串
             </summary>
             <returns>返回对象的字符串</returns>
         </member>
-        <member name="T:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder">
+        <member name="T:DbHelper.PostgreSqlConStrBuilder">
             <summary>
             PostgreSq的数据库连接字符串对象
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder.DataBase">
+        <member name="P:DbHelper.PostgreSqlConStrBuilder.DataBase">
             <summary>
             连接的数据库名称
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder.Port">
+        <member name="P:DbHelper.PostgreSqlConStrBuilder.Port">
             <summary>
             数据库端口号
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:DbHelper.PostgreSqlConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             构建数据库连接字符串对象
             </summary>
@@ -95,33 +95,33 @@
             <param name="password">数据库密码</param>
             <param name="dataBase">连接的数据库名称</param>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder.#ctor">
+        <member name="M:DbHelper.PostgreSqlConStrBuilder.#ctor">
             <summary>
             构造器
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.PostgreSqlConStrBuilder.ToString">
+        <member name="M:DbHelper.PostgreSqlConStrBuilder.ToString">
             <summary>
             返回对象的字符串
             </summary>
             <returns>返回对象的字符串</returns>
         </member>
-        <member name="T:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder">
+        <member name="T:DbHelper.SqlServerConStrBuilder">
             <summary>
             SqlServer的数据库连接字符串对象
             </summary>
         </member>
-        <member name="F:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder.UseLocal">
+        <member name="F:DbHelper.SqlServerConStrBuilder.UseLocal">
             <summary>
             是否使用本地模式
             </summary>
         </member>
-        <member name="P:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder.DataBase">
+        <member name="P:DbHelper.SqlServerConStrBuilder.DataBase">
             <summary>
             连接的数据库名称
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:DbHelper.SqlServerConStrBuilder.#ctor(System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             构建数据库连接字符串对象
             </summary>
@@ -131,12 +131,12 @@
             <param name="dataBase">连接的数据库名称</param>
             <param name="useLocal">是否使用本地模式</param>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder.#ctor">
+        <member name="M:DbHelper.SqlServerConStrBuilder.#ctor">
             <summary>
             构造器
             </summary>
         </member>
-        <member name="M:DbHelper.ConnectionStrBuilder.SqlServerConStrBuilder.ToString">
+        <member name="M:DbHelper.SqlServerConStrBuilder.ToString">
             <summary>
             返回对应的字符串类型
             </summary>
@@ -188,7 +188,12 @@
             事务命令对象
             </summary>
         </member>
-        <member name="P:DbHelper.DbContext.ConnectionStr">
+        <member name="F:DbHelper.DbContext.dbType">
+            <summary>
+            当前选择的数据库类型
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbContext.connectionStr">
             <summary>
             连接字符串
             </summary>
@@ -196,6 +201,31 @@
         <member name="P:DbHelper.DbContext.ErroMsg">
             <summary>
             返回最后一次获取到的错误信息
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbContext.DbConnection">
+            <summary>
+            获取当前的DbConnection
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbContext.DbCommand">
+            <summary>
+            获取当前的DbCommand
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbContext.ConnectionString">
+            <summary>
+            设置或获取连接字符串
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbContext.SelectProviderName">
+            <summary>
+            设置或获取当前选择的驱动名称
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbContext.Instance">
+            <summary>
+            获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
             </summary>
         </member>
         <member name="M:DbHelper.DbContext.#ctor(System.String,DbHelper.DataBaseType,System.String)">
@@ -206,13 +236,11 @@
             <param name="dbType">数据库类型,默认使用app.config中的设置</param>
             <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
         </member>
-        <member name="M:DbHelper.DbContext.#ctor(System.Data.Common.DbConnectionStringBuilder,DbHelper.DataBaseType,System.String)">
+        <member name="M:DbHelper.DbContext.#ctor(DbHelper.BaseConStrBuilder)">
             <summary>
             构造器
             </summary>
             <param name="conStrBuilder">连接字符串对象</param>
-            <param name="dbType">对应数据库类型</param>
-            <param name="selectName">配置文件对应数据库名称</param>
         </member>
         <member name="M:DbHelper.DbContext.#ctor">
             <summary>
@@ -225,7 +253,7 @@
             </summary>
             <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
         </member>
-        <member name="M:DbHelper.DbContext.ChangeConnectionStr(System.Data.Common.DbConnectionStringBuilder)">
+        <member name="M:DbHelper.DbContext.ChangeConnectionStr(DbHelper.BaseConStrBuilder)">
             <summary>
             更改连接字符串
             </summary>
@@ -248,6 +276,14 @@
             创建参数对象集合
             </summary>
             <param name="list">参数对象集合</param>
+        </member>
+        <member name="M:DbHelper.DbContext.AddParameter(System.String,System.Object,System.Data.ParameterDirection)">
+            <summary>
+            添加参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+            <param name="direction">类型</param>
         </member>
         <member name="M:DbHelper.DbContext.AddParameter(System.String,System.Object)">
             <summary>
@@ -376,6 +412,12 @@
             <param name="query"></param>
             <param name="text"></param>
         </member>
+        <member name="M:DbHelper.DbContext.Register(System.String)">
+            <summary>
+            注册
+            </summary>
+            <param name="selectName">配置文件对应数据库名称</param>
+        </member>
         <member name="M:DbHelper.DbContext.RegisterDb(System.String)">
             <summary>
             注册数据库对象
@@ -409,6 +451,18 @@
             释放对应资源
             </summary>
         </member>
+        <member name="T:DbHelper.DbProviderGlobal">
+            <summary>
+            全局的注册DbProvider
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbProviderGlobal.Register(System.Data.Common.DbProviderFactory)">
+            <summary>
+            注册DbProviderFactory实例,调用方式如:DbProviderGlobal.Register(System.Data.SqlClient.SqlClientFactory.Instance)
+            </summary>
+            <param name="providerFactory">对应数据库工厂实例</param>
+            <remarks>调用方式如:DbProviderGlobal.Register(System.Data.SqlClient.SqlClientFactory.Instance)</remarks>
+        </member>
         <member name="T:DbHelper.docClass.Helperdoc">
             <summary>
             帮助文档
@@ -425,9 +479,14 @@
             数据库类型
             </summary>
         </member>
-        <member name="F:DbHelper.DataBaseType.None">
+        <member name="F:DbHelper.DataBaseType.Config">
             <summary>
             不使用任何内置配置,直接使用配置文件项
+            </summary>
+        </member>
+        <member name="F:DbHelper.DataBaseType.Factory">
+            <summary>
+            使用DbProviderFactory进行注册
             </summary>
         </member>
         <member name="F:DbHelper.DataBaseType.SqlServer">

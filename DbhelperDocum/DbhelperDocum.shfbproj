@@ -50,8 +50,8 @@
     <SourceCodeBasePath>
     </SourceCodeBasePath>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\..\WORK\trunk\Source\src\common\dataaccess\ODPToOracleManage\ODPToOracleManage4.5.csproj" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="..\DbHelper\bin\Debug\DbHelper.dll" />
+<DocumentationSource sourceFile="..\DbHelper\bin\Debug\DbHelper.xml" /></DocumentationSources>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform

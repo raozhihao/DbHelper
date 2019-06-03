@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DbHelper.ConnectionStrBuilder
+﻿namespace DbHelper
 {
     /// <summary>
     /// Oracle的数据库连接字符串对象
@@ -24,7 +18,7 @@ namespace DbHelper.ConnectionStrBuilder
         /// </summary>
         public OracleConStrBuilder()
         {
-
+            
         }
 
         /// <summary>

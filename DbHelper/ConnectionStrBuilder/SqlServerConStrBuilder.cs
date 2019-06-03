@@ -1,4 +1,4 @@
-﻿namespace DbHelper.ConnectionStrBuilder
+﻿namespace DbHelper
 {
     /// <summary>
     /// SqlServer的数据库连接字符串对象
