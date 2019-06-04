@@ -32,15 +32,12 @@ namespace SimpleDemo
             // context.Dispose();
 
 
-            DbContext db = new DbContext();
-            db.SelectProviderName = "NpgsqlProvide";
-            db.ConnectionString = "Server=106.15.207.202;Port=5432;Database=postgres;User Id=postgres;Password=postgresql;";
-            var ol=db.ExcuteSacler("SELECT COUNT(1) FROM test");
-
             
-            db.SelectProviderName = "SqlClientProvide";
-            db.ConnectionString = "Data Source=.;Initial Catalog=GISTwo;Integrated Security=True";
-            Object obj2= db.ExcuteSacler("SELECT COUNT(1) FROM GraphicsPolygon");
+
+
+            //db.SelectProviderName = "SqlClientProvide";
+            //db.ConnectionString = "Data Source=.;Initial Catalog=GISTwo;Integrated Security=True";
+            //Object obj2= db.ExcuteSacler("SELECT COUNT(1) FROM GraphicsPolygon");
             #endregion
 
 
@@ -173,6 +170,16 @@ namespace SimpleDemo
             //DbContext context = new DbContext("Data Source=.;Initial Catalog=GISTwo;Integrated Security=True", DataBaseType.SqlServer);
 
             //or
+
+
+            #endregion
+
+
+
+            #region 测试
+
+            DbManager manager = DbManager.Instance;
+            manager.ConnectionString = "Server=106.15.207.202;Port=5432;Database=postgres;User Id=postgres;Password=postgresql;";
 
 
             #endregion

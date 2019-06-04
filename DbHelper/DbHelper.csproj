@@ -78,6 +78,7 @@
     <Compile Include="ConnectionStrBuilder\SqlServerConStrBuilder.cs" />
     <Compile Include="DataPropertyAttribute.cs" />
     <Compile Include="DbContext.cs" />
+    <Compile Include="DbManager.cs" />
     <Compile Include="DbProviderGlobal.cs" />
     <Compile Include="docClass\Helperdoc.cs" />
     <Compile Include="DataBaseType.cs" />

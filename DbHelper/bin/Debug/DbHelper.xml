@@ -451,6 +451,264 @@
             释放对应资源
             </summary>
         </member>
+        <member name="T:DbHelper.DbManager">
+            <summary>
+            提供对数据库访问的上下文类
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbManager.parameters">
+            <summary>
+            存储参数
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbManager.DbProvider">
+            <summary>
+            数据源适配对象
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbManager.transCommand">
+            <summary>
+            事务命令对象
+            </summary>
+        </member>
+        <member name="F:DbHelper.DbManager.dbType">
+            <summary>
+            当前选择的数据库类型
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbManager.ErroMsg">
+            <summary>
+            返回最后一次获取到的错误信息
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbManager.ConnectionString">
+            <summary>
+            设置或获取连接字符串
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbManager.SelectProviderName">
+            <summary>
+            设置或获取当前选择的驱动名称
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbManager.Instance">
+            <summary>
+            获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor(System.String,DbHelper.DataBaseType,System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="connectionStr">连接字符串</param>
+            <param name="dbType">数据库类型,默认使用app.config中的设置</param>
+            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor(DbHelper.BaseConStrBuilder)">
+            <summary>
+            构造器
+            </summary>
+            <param name="conStrBuilder">连接字符串对象</param>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor">
+            <summary>
+            构造器
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
+        </member>
+        <member name="M:DbHelper.DbManager.ChangeConnectionStr(DbHelper.BaseConStrBuilder)">
+            <summary>
+            更改连接字符串
+            </summary>
+            <param name="stringBuilder">连接字符串对象</param>
+        </member>
+        <member name="M:DbHelper.DbManager.ChangeConnectionStr(System.String)">
+            <summary>
+            更改连接字符串
+            </summary>
+            <param name="newConnectionStr">新连接字符串</param>
+        </member>
+        <member name="M:DbHelper.DbManager.AddParameter(System.Data.Common.DbParameter)">
+            <summary>
+            添加参数,请使用当前确切的参数类型
+            </summary>
+            <param name="parameter">参数对象</param>
+        </member>
+        <member name="M:DbHelper.DbManager.CreateParameters(System.Collections.Generic.IEnumerable{DbHelper.ParameterHelper})">
+            <summary>
+            创建参数对象集合
+            </summary>
+            <param name="list">参数对象集合</param>
+        </member>
+        <member name="M:DbHelper.DbManager.AddParameter(System.String,System.Object,System.Data.ParameterDirection)">
+            <summary>
+            添加参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+            <param name="direction">类型</param>
+        </member>
+        <member name="M:DbHelper.DbManager.AddParameter(System.String,System.Object)">
+            <summary>
+            添加参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+        </member>
+        <member name="M:DbHelper.DbManager.AddParameters(System.Data.Common.DbParameter[])">
+            <summary>
+            添加参数集合
+            </summary>
+            <param name="parameters">参数对象集合</param>
+        </member>
+        <member name="M:DbHelper.DbManager.ExecuteNonQuery(System.String,System.Data.CommandType)">
+            <summary>
+            增加,删除,更新
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回正确与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.ExcuteSacler(System.String,System.Data.CommandType)">
+            <summary>
+            获取单个的值
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回查询结果</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String)">
+            <summary>
+            调用有无返回值的存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+        </member>
+        <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String,System.Data.CommandType)">
+            <summary>
+            调用存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回调用之后的返回值</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.GetDataTable(System.String,System.Data.DataTable@,System.String)">
+            <summary>
+            获取DataTable
+            </summary>
+            <param name="query">sql查询语句</param>
+            <param name="dt">返回的数据集</param>
+            <param name="tableName">为数据集命名</param>
+            <returns>返回正确与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.UpdateTable(System.String,System.Data.DataTable)">
+            <summary>
+            更新表格
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="dt">需要更新的表</param>
+            <returns>返回正确与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.UpdateTable(System.String,System.Data.DataTable,System.Boolean,System.Data.ConflictOption)">
+            <summary>
+            更新表格
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="dt">需要更新的表</param>
+            <param name="setAllValues">指定 update 语句中是包含所有列值还是仅包含更改的列值。</param>
+            <param name="conflictOption">指定将如何检测和解决对数据源的相互冲突的更改。</param>
+            <returns>对表进行更新操作</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.GetList``1(System.String,System.Collections.Generic.List{``0}@)">
+            <summary>
+            获取指定对象集合
+            </summary>
+            <typeparam name="T">需要获取的对象</typeparam>
+            <param name="sql">sql语句</param>
+            <param name="values">返回的强类型集合</param>
+            <returns>返回正确与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.ToList``1(System.Data.DataTable)">
+            <summary>
+            根据DataTable创建一个强类型对象集合
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="dt"></param>
+            <returns>如果失败,将返回null</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.GetObjects(System.String)">
+            <summary>
+            获取对象集合
+            </summary>
+            <param name="sql">查询语句</param>
+            <returns>返回对象集合</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.ToDataTable``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            将集合对象转为DataTable
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="collection">对象集合</param>
+            <returns>返回一个DataTable</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.TransactionAdd(System.String,System.Data.CommandType)">
+            <summary>
+            增加一个事务处理
+            </summary>
+            <param name="sql">sql处理语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回正确与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.TransctionCommit">
+            <summary>
+            提交事务
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.TransctionRollBack">
+            <summary>
+            回滚事务
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.CreateCommand(System.String,System.Data.CommandType)">
+            <summary>
+            创建一个DbCommand
+            </summary>
+            <param name="query"></param>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DbHelper.DbManager.Register(System.String)">
+            <summary>
+            注册
+            </summary>
+            <param name="selectName">配置文件对应数据库名称</param>
+        </member>
+        <member name="M:DbHelper.DbManager.RegisterDb(System.String)">
+            <summary>
+            注册数据库对象
+            </summary>
+            <param name="selectName"></param>
+        </member>
+        <member name="M:DbHelper.DbManager.SetTransCommand(System.String,System.Data.CommandType)">
+            <summary>
+            设置事务属性
+            </summary>
+            <param name="sql"></param>
+            <param name="commandType"></param>
+        </member>
+        <member name="M:DbHelper.DbManager.GetObjectInfo``1(System.Data.DataTable,System.Int32)">
+            <summary>
+            获取单个对象
+            </summary>
+            <typeparam name="T">需要获取的对象</typeparam>
+            <param name="dt">对象的表</param>
+            <param name="index">当前需要获取的表中的行索引</param>
+            <returns></returns>
+        </member>
         <member name="T:DbHelper.DbProviderGlobal">
             <summary>
             全局的注册DbProvider
