@@ -32,7 +32,7 @@ namespace SimpleDemo
             // context.Dispose();
 
 
-            
+
 
 
             //db.SelectProviderName = "SqlClientProvide";
@@ -178,10 +178,11 @@ namespace SimpleDemo
 
             #region 测试
 
-            DbManager manager = DbManager.Instance;
-            manager.ConnectionString = "Server=106.15.207.202;Port=5432;Database=postgres;User Id=postgres;Password=postgresql;";
+            DbManager manager = new DbManager(DataBaseType.PostgreSql);
 
-
+            manager.ConnectionString = "Server=192.168.18.116;Port=5432;Database=postgres;User Id=postgres;Password=postgresql1;";
+            object obj = manager.ExcuteSacler("SELECT COUNT(1) FROM PARTS");
+            bool re = manager.GetDataTable("SELECT * FROM PARTS", out DataTable dt);
             #endregion
             Console.ReadKey();
         }

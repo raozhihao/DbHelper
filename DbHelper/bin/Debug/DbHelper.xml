@@ -510,7 +510,7 @@
             </summary>
             <param name="conStrBuilder">连接字符串对象</param>
         </member>
-        <member name="M:DbHelper.DbManager.#ctor">
+        <member name="M:DbHelper.DbManager.#ctor(DbHelper.DataBaseType)">
             <summary>
             构造器
             </summary>

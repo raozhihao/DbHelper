@@ -13,6 +13,7 @@ namespace DbHelper
 {
     /// <summary>
     /// 提供对数据库访问的上下文类
+    /// 本类为单一数据库访问类
     /// </summary>
     public class DbManager
     {
@@ -38,7 +39,7 @@ namespace DbHelper
         /// 当前选择的数据库类型
         /// </summary>
         private DataBaseType dbType;
-        
+
 
         private string selectName;
 
@@ -50,7 +51,7 @@ namespace DbHelper
         /// 返回最后一次获取到的错误信息
         /// </summary>
         public string ErroMsg { get; private set; }
-        
+
 
         /// <summary>
         /// 设置或获取连接字符串
@@ -138,8 +139,10 @@ namespace DbHelper
         /// <summary>
         /// 构造器
         /// </summary>
-        public DbManager() : this("")
+        public DbManager(DataBaseType baseType)
         {
+            this.dbType = baseType;
+            Register("");
         }
 
         /// <summary>
@@ -222,7 +225,6 @@ namespace DbHelper
         /// <param name="value">参数值</param>
         public void AddParameter(string name, object value)
         {
-
             this.AddParameter(name, value, ParameterDirection.Input);
         }
 
@@ -247,22 +249,25 @@ namespace DbHelper
         /// <returns>返回正确与否</returns>
         public bool ExecuteNonQuery(string query, CommandType commandType = CommandType.Text)
         {
+            DbCommand command = null;
             try
             {
-                DbCommand command = CreateCommand(query, commandType);
+                command = CreateCommand(query, commandType);
                 return command.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
             {
-
                 ErroMsg = ex.Message;
                 return false;
             }
             finally
             {
                 parameters.Clear();
+                DisposeCommand(command);
+
             }
         }
+
 
         /// <summary>
         /// 获取单个的值
@@ -272,19 +277,22 @@ namespace DbHelper
         /// <returns>返回查询结果</returns>
         public object ExcuteSacler(string query, CommandType commandType = CommandType.Text)
         {
+            DbCommand command = null;
             try
             {
-                DbCommand command = CreateCommand(query, commandType);
+                command = CreateCommand(query, commandType);
                 return command.ExecuteScalar();
             }
             catch (Exception ex)
             {
                 ErroMsg = ex.Message;
+
                 return null;
             }
             finally
             {
                 parameters.Clear();
+                DisposeCommand(command);
             }
         }
 
@@ -319,9 +327,10 @@ namespace DbHelper
         {
             dt = new DataTable(tableName);
             DbDataAdapter adapter = null;
+            DbCommand command = null;
             try
             {
-                 DbCommand command = CreateCommand(query,  CommandType.Text);
+                command = CreateCommand(query, CommandType.Text);
                 adapter = DbProvider.CreateDataAdapter();
 
                 adapter.SelectCommand = command;
@@ -338,11 +347,10 @@ namespace DbHelper
             {
                 parameters.Clear();
                 adapter?.Dispose();
+                DisposeCommand(command);
             }
 
         }
-
-
 
         /// <summary>
         /// 更新表格
@@ -366,9 +374,10 @@ namespace DbHelper
         public bool UpdateTable(string query, DataTable dt, bool setAllValues, ConflictOption conflictOption)
         {
             DbDataAdapter adapter = null;
+            DbCommand command = null;
             try
             {
-                DbCommand command = CreateCommand(query,  CommandType.Text);
+                command = CreateCommand(query, CommandType.Text);
                 adapter = DbProvider.CreateDataAdapter();
                 adapter.SelectCommand = command;
                 DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
@@ -387,6 +396,7 @@ namespace DbHelper
             {
                 this.parameters.Clear();
                 adapter?.Dispose();
+                DisposeCommand(command);
             }
         }
 
@@ -449,9 +459,10 @@ namespace DbHelper
         {
             DbDataReader reader = null;
             List<object[]> values = new List<object[]>();
+            DbCommand command = null;
             try
             {
-                DbCommand command = CreateCommand(sql,  CommandType.Text);
+                command = CreateCommand(sql, CommandType.Text);
                 reader = command.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -471,6 +482,7 @@ namespace DbHelper
             finally
             {
                 reader.Close();
+                DisposeCommand(command);
             }
             return values;
         }
@@ -568,14 +580,29 @@ namespace DbHelper
         #endregion
 
         #region 私有方法
-        
+
+        /// <summary>
+        /// 释放command的所有资源
+        /// </summary>
+        /// <param name="command"></param>
+        private void DisposeCommand(DbCommand command)
+        {
+            if (command != null)
+            {
+                command.Connection?.Close();
+                command.Connection?.Dispose();
+                command.Dispose();
+                command = null;
+            }
+        }
+
         /// <summary>
         /// 创建一个DbCommand
         /// </summary>
         /// <param name="query"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public DbCommand CreateCommand(string query, CommandType text)
+        private DbCommand CreateCommand(string query, CommandType text)
         {
             DbCommand command = null;
             DbConnection connection = null;
@@ -598,13 +625,8 @@ namespace DbHelper
             {
 
                 ErroMsg = ex.Message;
+                DisposeCommand(command);
                 return null;
-            }
-            finally
-            {
-                command?.Dispose();
-                connection?.Close();
-                connection?.Dispose();
             }
         }
         /// <summary>
@@ -699,7 +721,7 @@ namespace DbHelper
                     connection?.Dispose();
                     transCommand?.Dispose();
                     transCommand = null;
-                } 
+                }
             }
         }
 
@@ -780,7 +802,7 @@ namespace DbHelper
         }
 
 
-      
+
         #endregion
 
 
