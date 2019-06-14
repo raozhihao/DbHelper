@@ -454,6 +454,7 @@
         <member name="T:DbHelper.DbManager">
             <summary>
             提供对数据库访问的上下文类
+            本类为单一数据库访问类
             </summary>
         </member>
         <member name="F:DbHelper.DbManager.parameters">
@@ -672,6 +673,12 @@
             <summary>
             回滚事务
             </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.DisposeCommand(System.Data.Common.DbCommand)">
+            <summary>
+            释放command的所有资源
+            </summary>
+            <param name="command"></param>
         </member>
         <member name="M:DbHelper.DbManager.CreateCommand(System.String,System.Data.CommandType)">
             <summary>

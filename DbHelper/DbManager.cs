@@ -567,7 +567,6 @@ namespace DbHelper
             if (null != transCommand)
             {
                 transCommand.Transaction.Rollback();
-                transCommand.Transaction.Dispose();
                 transCommand.Connection.Close();
                 transCommand.Connection.Dispose();
                 transCommand.Dispose();
