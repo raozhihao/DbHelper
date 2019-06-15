@@ -12,7 +12,7 @@ using System.Reflection;
 namespace DbHelper
 {
     /// <summary>
-    /// 提供对数据库访问的上下文类
+    /// 提供对数据库访问的上下文类,该类使用长连接
     /// </summary>
     public class DbContext : IDisposable
     {
@@ -616,7 +616,7 @@ namespace DbHelper
         {
             if (null != transCommand)
             {
-                transCommand.Transaction.Rollback();
+                transCommand.Transaction?.Rollback();
             }
         }
 

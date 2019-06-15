@@ -13,7 +13,7 @@ namespace DbHelper
 {
     /// <summary>
     /// 提供对数据库访问的上下文类
-    /// 本类为单一数据库访问类
+    /// 本类为短连接
     /// </summary>
     public class DbManager
     {
@@ -253,6 +253,7 @@ namespace DbHelper
             try
             {
                 command = CreateCommand(query, commandType);
+                
                 return command.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -551,7 +552,6 @@ namespace DbHelper
             if (null != transCommand)
             {
                 transCommand.Transaction.Commit();
-                transCommand.Transaction.Dispose();
                 transCommand.Connection.Close();
                 transCommand.Connection.Dispose();
                 transCommand.Dispose();
@@ -622,10 +622,9 @@ namespace DbHelper
             }
             catch (Exception ex)
             {
-
                 ErroMsg = ex.Message;
                 DisposeCommand(command);
-                return null;
+                throw;
             }
         }
         /// <summary>
@@ -701,13 +700,8 @@ namespace DbHelper
                 {
                     connection.Open();
                     transCommand = connection.CreateCommand();
-                    transCommand.CommandText = sql;
                     transCommand.CommandType = commandType;
-                    if (parameters.Count > 0)
-                    {
-                        transCommand.Parameters.Clear();
-                        transCommand.Parameters.AddRange(parameters.ToArray());
-                    }
+                   
                     if (transCommand.Transaction == null)
                     {
                         transCommand.Transaction = transCommand.Connection.BeginTransaction();
@@ -721,6 +715,12 @@ namespace DbHelper
                     transCommand?.Dispose();
                     transCommand = null;
                 }
+            }
+            transCommand.CommandText = sql;
+            if (parameters.Count > 0)
+            {
+                transCommand.Parameters.Clear();
+                transCommand.Parameters.AddRange(parameters.ToArray());
             }
         }
 

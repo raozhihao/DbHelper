@@ -160,7 +160,7 @@
         </member>
         <member name="T:DbHelper.DbContext">
             <summary>
-            提供对数据库访问的上下文类
+            提供对数据库访问的上下文类,该类使用长连接
             </summary>
         </member>
         <member name="F:DbHelper.DbContext.parameters">
@@ -454,7 +454,7 @@
         <member name="T:DbHelper.DbManager">
             <summary>
             提供对数据库访问的上下文类
-            本类为单一数据库访问类
+            本类为短连接
             </summary>
         </member>
         <member name="F:DbHelper.DbManager.parameters">
