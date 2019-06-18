@@ -381,8 +381,9 @@ namespace DbHelper
         /// <param name="query">sql查询语句</param>
         /// <param name="dt">返回的数据集</param>
         /// <param name="tableName">为数据集命名</param>
+        /// <param name="columnUpper">是否将列名转换为大写</param>
         /// <returns>返回正确与否</returns>
-        public bool GetDataTable(string query, out DataTable dt, string tableName = "")
+        public bool GetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
         {
             dt = new DataTable(tableName);
             DbDataAdapter adapter = null;
@@ -394,6 +395,14 @@ namespace DbHelper
                 adapter.SelectCommand = command;
 
                 adapter.Fill(dt);
+                if (columnUpper)
+                {
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        string colName = dt.Columns[i].ColumnName;
+                        dt.Columns[i].ColumnName = colName.ToUpper();
+                    }
+                }
                 return true;
             }
             catch (Exception ex)

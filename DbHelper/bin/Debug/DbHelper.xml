@@ -328,13 +328,14 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns>返回调用之后的返回值</returns>
         </member>
-        <member name="M:DbHelper.DbContext.GetDataTable(System.String,System.Data.DataTable@,System.String)">
+        <member name="M:DbHelper.DbContext.GetDataTable(System.String,System.Data.DataTable@,System.String,System.Boolean)">
             <summary>
             获取DataTable
             </summary>
             <param name="query">sql查询语句</param>
             <param name="dt">返回的数据集</param>
             <param name="tableName">为数据集命名</param>
+            <param name="columnUpper">是否将列名转换为大写</param>
             <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbContext.UpdateTable(System.String,System.Data.DataTable)">
@@ -597,13 +598,14 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns>返回调用之后的返回值</returns>
         </member>
-        <member name="M:DbHelper.DbManager.GetDataTable(System.String,System.Data.DataTable@,System.String)">
+        <member name="M:DbHelper.DbManager.GetDataTable(System.String,System.Data.DataTable@,System.String,System.Boolean)">
             <summary>
             获取DataTable
             </summary>
             <param name="query">sql查询语句</param>
             <param name="dt">返回的数据集</param>
             <param name="tableName">为数据集命名</param>
+            <param name="columnUpper">是否将列名转换为大写</param>
             <returns>返回正确与否</returns>
         </member>
         <member name="M:DbHelper.DbManager.UpdateTable(System.String,System.Data.DataTable)">
