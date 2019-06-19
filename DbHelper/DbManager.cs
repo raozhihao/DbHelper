@@ -535,9 +535,9 @@ namespace DbHelper
         /// <returns>返回正确与否</returns>
         public bool TransactionAdd(string sql, CommandType commandType = CommandType.Text)
         {
-            SetTransCommand(sql);
             try
             {
+                SetTransCommand(sql);
                 transCommand.ExecuteNonQuery();
                 return true;
             }
@@ -632,9 +632,11 @@ namespace DbHelper
             }
             catch (Exception ex)
             {
-                ErroMsg = ex.Message;
+                throw ex;
+            }
+            finally
+            {
                 DisposeCommand(command);
-                throw;
             }
         }
         /// <summary>
@@ -724,6 +726,8 @@ namespace DbHelper
                     connection?.Dispose();
                     transCommand?.Dispose();
                     transCommand = null;
+                    parameters.Clear();
+                    throw ex;
                 }
             }
             transCommand.CommandText = sql;
