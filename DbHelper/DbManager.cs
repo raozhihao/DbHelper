@@ -632,11 +632,9 @@ namespace DbHelper
             }
             catch (Exception ex)
             {
-                throw ex;
-            }
-            finally
-            {
                 DisposeCommand(command);
+                parameters.Clear();
+                throw ex;
             }
         }
         /// <summary>
