@@ -235,7 +235,7 @@ namespace DbHelper
                 }
                 connection.ConnectionString = newConnectionStr;
             }
-            catch (Exception ex)
+            catch
             {
                 throw new ArgumentException(ErroMsg);
             }
@@ -273,7 +273,7 @@ namespace DbHelper
         /// <param name="name">参数名</param>
         /// <param name="value">参数值</param>
         /// <param name="direction">类型</param>
-        public void AddParameter(string name, object value,ParameterDirection direction)
+        public void AddParameter(string name, object value, ParameterDirection direction)
         {
             var par = DbProvider.CreateParameter();
             par.ParameterName = name;
@@ -289,8 +289,8 @@ namespace DbHelper
         /// <param name="value">参数值</param>
         public void AddParameter(string name, object value)
         {
-           
-            this.AddParameter(name, value,ParameterDirection.Input);
+
+            this.AddParameter(name, value, ParameterDirection.Input);
         }
 
 
@@ -312,7 +312,7 @@ namespace DbHelper
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <returns>返回正确与否</returns>
-        public bool ExecuteNonQuery(string query, CommandType commandType = CommandType.Text)
+        public bool ExcuteNonQuery(string query, CommandType commandType = CommandType.Text)
         {
             try
             {
@@ -452,6 +452,7 @@ namespace DbHelper
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
                 adapter.Update(dt);
+                dt.AcceptChanges();
                 return true;
             }
             catch (Exception ex)
@@ -466,6 +467,37 @@ namespace DbHelper
             }
         }
 
+        /// <summary>
+        /// 事务更新
+        /// </summary>
+        /// <param name="dt">更新表</param>
+        /// <param name="query">查询语句</param>
+        /// <param name="setAllValues"></param>
+        /// <param name="conflictOption"></param>
+        /// <returns></returns>
+        public bool TransactionUpdateDataTable(ref DataTable dt, string query, bool setAllValues = false, ConflictOption conflictOption = ConflictOption.OverwriteChanges)
+        {
+            bool result;
+            try
+            {
+                SetTransCommand(query);
+                DbDataAdapter adapter = DbProvider.CreateDataAdapter();
+                adapter.SelectCommand = this.transCommand;
+                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
+                builder.DataAdapter = adapter;
+                builder.SetAllValues = setAllValues;
+                builder.ConflictOption = conflictOption;
+                adapter.Update(dt);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                this.ErroMsg = ex.Message;
+                this.TransctionRollBack();
+            }
+            return result;
+        }
         /// <summary>
         /// 获取指定对象集合
         /// </summary>
@@ -646,11 +678,10 @@ namespace DbHelper
             {
                 command = DbProvider.CreateCommand();
                 command.Connection = connection;
-                connection.ConnectionString = this.ConnectionString;
-
             }
             if (connection.State == ConnectionState.Closed)
             {
+                connection.ConnectionString = this.connectionStr;
                 connection.Open();
             }
             command.CommandType = text;
@@ -693,7 +724,6 @@ namespace DbHelper
             if (re)
             {
                 connection = DbProvider.CreateConnection();
-                //connection.ConnectionString = this.ConnectionString;
                 command = null;
                 transCommand = null;
                 ErroMsg = "";
@@ -741,27 +771,67 @@ namespace DbHelper
         /// <param name="commandType"></param>
         private void SetTransCommand(string sql, CommandType commandType = CommandType.Text)
         {
+
             if (transCommand == null)
             {
-                transCommand = DbProvider.CreateCommand();
-                transCommand.Connection = connection;
+                var connection = DbProvider.CreateConnection();
+                connection.ConnectionString = this.ConnectionString;
+                try
+                {
+                    connection.Open();
+                    transCommand = connection.CreateCommand();
+                    transCommand.CommandType = commandType;
+
+                    transCommand.Transaction = transCommand.Connection.BeginTransaction();
+                }
+                catch (Exception ex)
+                {
+                    ErroMsg = ex.Message;
+                    connection?.Close();
+                    connection?.Dispose();
+                    transCommand?.Dispose();
+                    transCommand = null;
+                    parameters.Clear();
+                    throw ex;
+                }
             }
             transCommand.CommandText = sql;
-            transCommand.CommandType = commandType;
-            if (connection.State == ConnectionState.Closed)
-            {
-                connection.Open();
-            }
             if (parameters.Count > 0)
             {
                 transCommand.Parameters.Clear();
                 transCommand.Parameters.AddRange(parameters.ToArray());
             }
-            if (transCommand.Transaction == null)
+        }
+
+        /// <summary>
+        /// 获取单行的值,无返回值时返回null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<T> GetSingleColumnValue<T>(string query)
+        {
+            List<T> list = new List<T>();
+            bool re=this.GetDataTable(query, out DataTable dt);
+            if (!re)
             {
-                transCommand.Transaction = transCommand.Connection.BeginTransaction();
+                return null;
             }
 
+            var rows = dt.Rows;
+            int count = rows.Count;
+            if (count == 0)
+            {
+                return list;
+            }
+            
+            for (int i = 0; i < count; i++)
+            {
+                T t = default(T);
+                t = (T)rows[i][0];
+                list.Add(t);
+            }
+            return list;
         }
 
         /// <summary>

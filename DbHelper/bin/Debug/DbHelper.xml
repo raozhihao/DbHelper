@@ -298,7 +298,7 @@
             </summary>
             <param name="parameters">参数对象集合</param>
         </member>
-        <member name="M:DbHelper.DbContext.ExecuteNonQuery(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbContext.ExcuteNonQuery(System.String,System.Data.CommandType)">
             <summary>
             增加,删除,更新
             </summary>
@@ -355,6 +355,16 @@
             <param name="setAllValues">指定 update 语句中是包含所有列值还是仅包含更改的列值。</param>
             <param name="conflictOption">指定将如何检测和解决对数据源的相互冲突的更改。</param>
             <returns>对表进行更新操作</returns>
+        </member>
+        <member name="M:DbHelper.DbContext.TransactionUpdateDataTable(System.Data.DataTable@,System.String,System.Boolean,System.Data.ConflictOption)">
+            <summary>
+            事务更新
+            </summary>
+            <param name="dt">更新表</param>
+            <param name="query">查询语句</param>
+            <param name="setAllValues"></param>
+            <param name="conflictOption"></param>
+            <returns></returns>
         </member>
         <member name="M:DbHelper.DbContext.GetList``1(System.String,System.Collections.Generic.List{``0}@)">
             <summary>
@@ -431,6 +441,14 @@
             </summary>
             <param name="sql"></param>
             <param name="commandType"></param>
+        </member>
+        <member name="M:DbHelper.DbContext.GetSingleColumnValue``1(System.String)">
+            <summary>
+            获取单行的值,无返回值时返回null
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <returns></returns>
         </member>
         <member name="M:DbHelper.DbContext.GetObjectInfo``1(System.Data.DataTable,System.Int32)">
             <summary>
@@ -568,7 +586,7 @@
             </summary>
             <param name="parameters">参数对象集合</param>
         </member>
-        <member name="M:DbHelper.DbManager.ExecuteNonQuery(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbManager.ExcuteNonQuery(System.String,System.Data.CommandType)">
             <summary>
             增加,删除,更新
             </summary>
@@ -626,6 +644,16 @@
             <param name="conflictOption">指定将如何检测和解决对数据源的相互冲突的更改。</param>
             <returns>对表进行更新操作</returns>
         </member>
+        <member name="M:DbHelper.DbManager.TransactionUpdateDataTable(System.Data.DataTable@,System.String,System.Boolean,System.Data.ConflictOption)">
+            <summary>
+            事务更新
+            </summary>
+            <param name="dt">更新表</param>
+            <param name="query">查询语句</param>
+            <param name="setAllValues"></param>
+            <param name="conflictOption"></param>
+            <returns></returns>
+        </member>
         <member name="M:DbHelper.DbManager.GetList``1(System.String,System.Collections.Generic.List{``0}@)">
             <summary>
             获取指定对象集合
@@ -675,6 +703,14 @@
             <summary>
             回滚事务
             </summary>
+        </member>
+        <member name="M:DbHelper.DbManager.GetSingleColumnValue``1(System.String)">
+            <summary>
+            获取单行的值,无返回值时返回null
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <returns></returns>
         </member>
         <member name="M:DbHelper.DbManager.DisposeCommand(System.Data.Common.DbCommand)">
             <summary>

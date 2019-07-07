@@ -247,13 +247,13 @@ namespace DbHelper
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <returns>返回正确与否</returns>
-        public bool ExecuteNonQuery(string query, CommandType commandType = CommandType.Text)
+        public bool ExcuteNonQuery(string query, CommandType commandType = CommandType.Text)
         {
             DbCommand command = null;
             try
             {
                 command = CreateCommand(query, commandType);
-                
+
                 return command.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -325,7 +325,7 @@ namespace DbHelper
         /// <param name="tableName">为数据集命名</param>
         /// <param name="columnUpper">是否将列名转换为大写</param>
         /// <returns>返回正确与否</returns>
-        public bool GetDataTable(string query, out DataTable dt, string tableName = "",bool columnUpper=true)
+        public bool GetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
         {
             dt = new DataTable(tableName);
             DbDataAdapter adapter = null;
@@ -346,7 +346,7 @@ namespace DbHelper
                         dt.Columns[i].ColumnName = colName.ToUpper();
                     }
                 }
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -396,6 +396,7 @@ namespace DbHelper
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
                 adapter.Update(dt);
+                dt.AcceptChanges();
                 return true;
             }
             catch (Exception ex)
@@ -409,6 +410,38 @@ namespace DbHelper
                 adapter?.Dispose();
                 DisposeCommand(command);
             }
+        }
+
+        /// <summary>
+        /// 事务更新
+        /// </summary>
+        /// <param name="dt">更新表</param>
+        /// <param name="query">查询语句</param>
+        /// <param name="setAllValues"></param>
+        /// <param name="conflictOption"></param>
+        /// <returns></returns>
+        public bool TransactionUpdateDataTable(ref DataTable dt, string query, bool setAllValues = false, ConflictOption conflictOption = ConflictOption.OverwriteChanges)
+        {
+            bool result;
+            try
+            {
+                SetTransCommand(query);
+                DbDataAdapter adapter = DbProvider.CreateDataAdapter();
+                adapter.SelectCommand = this.transCommand;
+                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
+                builder.DataAdapter = adapter;
+                builder.SetAllValues = setAllValues;
+                builder.ConflictOption = conflictOption;
+                adapter.Update(dt);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                this.ErroMsg = ex.Message;
+                this.TransctionRollBack();
+            }
+            return result;
         }
 
         /// <summary>
@@ -585,7 +618,36 @@ namespace DbHelper
         }
 
 
+        /// <summary>
+        /// 获取单行的值,无返回值时返回null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<T> GetSingleColumnValue<T>(string query)
+        {
+            List<T> list = new List<T>();
+            bool re = this.GetDataTable(query, out DataTable dt);
+            if (!re)
+            {
+                return null;
+            }
 
+            var rows = dt.Rows;
+            int count = rows.Count;
+            if (count == 0)
+            {
+                return list;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                T t = default(T);
+                t = (T)rows[i][0];
+                list.Add(t);
+            }
+            return list;
+        }
         #endregion
 
         #region 私有方法
@@ -711,11 +773,8 @@ namespace DbHelper
                     connection.Open();
                     transCommand = connection.CreateCommand();
                     transCommand.CommandType = commandType;
-                   
-                    if (transCommand.Transaction == null)
-                    {
-                        transCommand.Transaction = transCommand.Connection.BeginTransaction();
-                    }
+
+                    transCommand.Transaction = transCommand.Connection.BeginTransaction();
                 }
                 catch (Exception ex)
                 {
