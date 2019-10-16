@@ -317,7 +317,8 @@ namespace DbHelper
             try
             {
                 SetCommand(query, commandType);
-                return command.ExecuteNonQuery() > 0;
+                command.ExecuteNonQuery();
+                return true;
             }
             catch (Exception ex)
             {
@@ -385,6 +386,10 @@ namespace DbHelper
         /// <returns>返回正确与否</returns>
         public bool GetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
         {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                tableName = "dt";
+            }
             dt = new DataTable(tableName);
             DbDataAdapter adapter = null;
             try
@@ -674,6 +679,7 @@ namespace DbHelper
         /// <param name="text"></param>
         private void SetCommand(string query, CommandType text)
         {
+            ErroMsg = "";
             if (command == null)
             {
                 command = DbProvider.CreateCommand();
@@ -771,7 +777,7 @@ namespace DbHelper
         /// <param name="commandType"></param>
         private void SetTransCommand(string sql, CommandType commandType = CommandType.Text)
         {
-
+            ErroMsg = "";
             if (transCommand == null)
             {
                 var connection = DbProvider.CreateConnection();
@@ -812,7 +818,7 @@ namespace DbHelper
         public List<T> GetSingleColumnValue<T>(string query)
         {
             List<T> list = new List<T>();
-            bool re=this.GetDataTable(query, out DataTable dt);
+            bool re = this.GetDataTable(query, out DataTable dt);
             if (!re)
             {
                 return null;
@@ -824,7 +830,7 @@ namespace DbHelper
             {
                 return list;
             }
-            
+
             for (int i = 0; i < count; i++)
             {
                 T t = default(T);
@@ -959,7 +965,6 @@ namespace DbHelper
         }
         #endregion
         #endregion
-
-
+        
     }
 }

@@ -254,7 +254,8 @@ namespace DbHelper
             {
                 command = CreateCommand(query, commandType);
 
-                return command.ExecuteNonQuery() > 0;
+                 command.ExecuteNonQuery();
+                return true;
             }
             catch (Exception ex)
             {
@@ -327,6 +328,10 @@ namespace DbHelper
         /// <returns>返回正确与否</returns>
         public bool GetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
         {
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                tableName = "dt";
+            }
             dt = new DataTable(tableName);
             DbDataAdapter adapter = null;
             DbCommand command = null;
@@ -359,6 +364,7 @@ namespace DbHelper
                 parameters.Clear();
                 adapter?.Dispose();
                 DisposeCommand(command);
+               
             }
 
         }
@@ -675,6 +681,7 @@ namespace DbHelper
         /// <returns></returns>
         private DbCommand CreateCommand(string query, CommandType text)
         {
+            ErroMsg = "";
             DbCommand command = null;
             DbConnection connection = null;
             try
@@ -764,6 +771,7 @@ namespace DbHelper
         /// <param name="commandType"></param>
         private void SetTransCommand(string sql, CommandType commandType = CommandType.Text)
         {
+            ErroMsg = "";
             if (transCommand == null)
             {
                 var connection = DbProvider.CreateConnection();
