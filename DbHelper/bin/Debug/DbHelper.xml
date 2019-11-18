@@ -188,11 +188,6 @@
             事务命令对象
             </summary>
         </member>
-        <member name="F:DbHelper.DbContext.dbType">
-            <summary>
-            当前选择的数据库类型
-            </summary>
-        </member>
         <member name="F:DbHelper.DbContext.connectionStr">
             <summary>
             连接字符串
@@ -218,40 +213,22 @@
             设置或获取连接字符串
             </summary>
         </member>
-        <member name="P:DbHelper.DbContext.SelectProviderName">
-            <summary>
-            设置或获取当前选择的驱动名称
-            </summary>
-        </member>
         <member name="P:DbHelper.DbContext.Instance">
             <summary>
             获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
-            </summary>
-        </member>
-        <member name="M:DbHelper.DbContext.#ctor(System.String,DbHelper.DataBaseType,System.String)">
-            <summary>
-            构造函数
-            </summary>
-            <param name="connectionStr">连接字符串</param>
-            <param name="dbType">数据库类型,默认使用app.config中的设置</param>
-            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        </member>
-        <member name="M:DbHelper.DbContext.#ctor(DbHelper.BaseConStrBuilder)">
-            <summary>
-            构造器
-            </summary>
-            <param name="conStrBuilder">连接字符串对象</param>
-        </member>
-        <member name="M:DbHelper.DbContext.#ctor">
-            <summary>
-            构造器
             </summary>
         </member>
         <member name="M:DbHelper.DbContext.#ctor(System.String)">
             <summary>
             构造函数
             </summary>
-            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
+            <param name="connectionStr">连接字符串</param>
+        </member>
+        <member name="M:DbHelper.DbContext.#ctor(DbHelper.BaseConStrBuilder)">
+            <summary>
+            构造器
+            </summary>
+            <param name="conStrBuilder">连接字符串对象</param>
         </member>
         <member name="M:DbHelper.DbContext.ChangeConnectionStr(DbHelper.BaseConStrBuilder)">
             <summary>
@@ -306,9 +283,25 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns>返回正确与否</returns>
         </member>
+        <member name="M:DbHelper.DbContext.TransctionExcuteNonQuery(System.String,System.Data.CommandType)">
+            <summary>
+            事务内增加,删除,更新
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns></returns>
+        </member>
         <member name="M:DbHelper.DbContext.ExcuteSacler(System.String,System.Data.CommandType)">
             <summary>
             获取单个的值
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回查询结果</returns>
+        </member>
+        <member name="M:DbHelper.DbContext.TransctionExcuteSacler(System.String,System.Data.CommandType)">
+            <summary>
+            事务内获取单个的值
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
@@ -320,9 +313,23 @@
             </summary>
             <param name="proName">存储过程或函数名</param>
         </member>
+        <member name="M:DbHelper.DbContext.TransctionExcuteProcedure(System.String)">
+            <summary>
+            事务内调用有无返回值的存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+        </member>
         <member name="M:DbHelper.DbContext.ExcuteProcedure(System.String,System.Data.CommandType)">
             <summary>
             调用存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回调用之后的返回值</returns>
+        </member>
+        <member name="M:DbHelper.DbContext.TransctionExcuteProcedure(System.String,System.Data.CommandType)">
+            <summary>
+            事务内调用存储过程
             </summary>
             <param name="proName">存储过程或函数名</param>
             <param name="commandType">指定如何解释命令字符串</param>
@@ -398,14 +405,6 @@
             <param name="collection">对象集合</param>
             <returns>返回一个DataTable</returns>
         </member>
-        <member name="M:DbHelper.DbContext.TransactionAdd(System.String,System.Data.CommandType)">
-            <summary>
-            增加一个事务处理
-            </summary>
-            <param name="sql">sql处理语句</param>
-            <param name="commandType">指定如何解释命令字符串</param>
-            <returns>返回正确与否</returns>
-        </member>
         <member name="M:DbHelper.DbContext.TransctionCommit">
             <summary>
             提交事务
@@ -422,18 +421,6 @@
             </summary>
             <param name="query"></param>
             <param name="text"></param>
-        </member>
-        <member name="M:DbHelper.DbContext.Register(System.String)">
-            <summary>
-            注册
-            </summary>
-            <param name="selectName">配置文件对应数据库名称</param>
-        </member>
-        <member name="M:DbHelper.DbContext.RegisterDb(System.String)">
-            <summary>
-            注册数据库对象
-            </summary>
-            <param name="selectName"></param>
         </member>
         <member name="M:DbHelper.DbContext.SetTransCommand(System.String,System.Data.CommandType)">
             <summary>
@@ -491,11 +478,6 @@
             事务命令对象
             </summary>
         </member>
-        <member name="F:DbHelper.DbManager.dbType">
-            <summary>
-            当前选择的数据库类型
-            </summary>
-        </member>
         <member name="P:DbHelper.DbManager.ErroMsg">
             <summary>
             返回最后一次获取到的错误信息
@@ -506,40 +488,22 @@
             设置或获取连接字符串
             </summary>
         </member>
-        <member name="P:DbHelper.DbManager.SelectProviderName">
-            <summary>
-            设置或获取当前选择的驱动名称
-            </summary>
-        </member>
         <member name="P:DbHelper.DbManager.Instance">
             <summary>
             获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
-            </summary>
-        </member>
-        <member name="M:DbHelper.DbManager.#ctor(System.String,DbHelper.DataBaseType,System.String)">
-            <summary>
-            构造函数
-            </summary>
-            <param name="connectionStr">连接字符串</param>
-            <param name="dbType">数据库类型,默认使用app.config中的设置</param>
-            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        </member>
-        <member name="M:DbHelper.DbManager.#ctor(DbHelper.BaseConStrBuilder)">
-            <summary>
-            构造器
-            </summary>
-            <param name="conStrBuilder">连接字符串对象</param>
-        </member>
-        <member name="M:DbHelper.DbManager.#ctor(DbHelper.DataBaseType)">
-            <summary>
-            构造器
             </summary>
         </member>
         <member name="M:DbHelper.DbManager.#ctor(System.String)">
             <summary>
             构造函数
             </summary>
-            <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
+            <param name="connectionStr">连接字符串</param>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor(DbHelper.BaseConStrBuilder)">
+            <summary>
+            构造器
+            </summary>
+            <param name="conStrBuilder">连接字符串对象</param>
         </member>
         <member name="M:DbHelper.DbManager.ChangeConnectionStr(DbHelper.BaseConStrBuilder)">
             <summary>
@@ -594,9 +558,25 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns>返回正确与否</returns>
         </member>
+        <member name="M:DbHelper.DbManager.TransctionExcuteNonQuery(System.String,System.Data.CommandType)">
+            <summary>
+            事务内增加,删除,更新
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns></returns>
+        </member>
         <member name="M:DbHelper.DbManager.ExcuteSacler(System.String,System.Data.CommandType)">
             <summary>
             获取单个的值
+            </summary>
+            <param name="query">sql语句</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回查询结果</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.TransctionExcuteSacler(System.String,System.Data.CommandType)">
+            <summary>
+            事务内获取单个的值
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
@@ -608,9 +588,23 @@
             </summary>
             <param name="proName">存储过程或函数名</param>
         </member>
+        <member name="M:DbHelper.DbManager.TransctionExcuteProcedure(System.String)">
+            <summary>
+            事务内调用有无返回值的存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+        </member>
         <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String,System.Data.CommandType)">
             <summary>
             调用存储过程
+            </summary>
+            <param name="proName">存储过程或函数名</param>
+            <param name="commandType">指定如何解释命令字符串</param>
+            <returns>返回调用之后的返回值</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.TransctionExcuteProcedure(System.String,System.Data.CommandType)">
+            <summary>
+            事务内调用存储过程
             </summary>
             <param name="proName">存储过程或函数名</param>
             <param name="commandType">指定如何解释命令字符串</param>
@@ -686,14 +680,6 @@
             <param name="collection">对象集合</param>
             <returns>返回一个DataTable</returns>
         </member>
-        <member name="M:DbHelper.DbManager.TransactionAdd(System.String,System.Data.CommandType)">
-            <summary>
-            增加一个事务处理
-            </summary>
-            <param name="sql">sql处理语句</param>
-            <param name="commandType">指定如何解释命令字符串</param>
-            <returns>返回正确与否</returns>
-        </member>
         <member name="M:DbHelper.DbManager.TransctionCommit">
             <summary>
             提交事务
@@ -726,18 +712,6 @@
             <param name="text"></param>
             <returns></returns>
         </member>
-        <member name="M:DbHelper.DbManager.Register(System.String)">
-            <summary>
-            注册
-            </summary>
-            <param name="selectName">配置文件对应数据库名称</param>
-        </member>
-        <member name="M:DbHelper.DbManager.RegisterDb(System.String)">
-            <summary>
-            注册数据库对象
-            </summary>
-            <param name="selectName"></param>
-        </member>
         <member name="M:DbHelper.DbManager.SetTransCommand(System.String,System.Data.CommandType)">
             <summary>
             设置事务属性
@@ -765,49 +739,6 @@
             </summary>
             <param name="providerFactory">对应数据库工厂实例</param>
             <remarks>调用方式如:DbProviderGlobal.Register(System.Data.SqlClient.SqlClientFactory.Instance)</remarks>
-        </member>
-        <member name="T:DbHelper.docClass.Helperdoc">
-            <summary>
-            帮助文档
-            </summary>
-        </member>
-        <member name="M:DbHelper.docClass.Helperdoc.GetStart">
-            <summary>
-            开始
-            </summary>
-            <returns>返回文档描述字符串</returns>
-        </member>
-        <member name="T:DbHelper.DataBaseType">
-            <summary>
-            数据库类型
-            </summary>
-        </member>
-        <member name="F:DbHelper.DataBaseType.Config">
-            <summary>
-            不使用任何内置配置,直接使用配置文件项
-            </summary>
-        </member>
-        <member name="F:DbHelper.DataBaseType.Factory">
-            <summary>
-            使用DbProviderFactory进行注册
-            </summary>
-        </member>
-        <member name="F:DbHelper.DataBaseType.SqlServer">
-            <summary>
-            使用内置的SqlServer
-            </summary>
-        </member>
-        <member name="F:DbHelper.DataBaseType.Oracle">
-            <summary>
-            使用内置的Oracle
-            程序集 Oracle.DataAccess, Version=4.112.1.2, Culture=neutral, PublicKeyToken=89b483f429c47342
-            </summary>
-        </member>
-        <member name="F:DbHelper.DataBaseType.PostgreSql">
-            <summary>
-            使用内置的PostgreSql
-            程序集 Npgsql, Version=4.0.5.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7
-            </summary>
         </member>
         <member name="T:DbHelper.ParameterHelper">
             <summary>

@@ -44,17 +44,12 @@ namespace DbHelper
         /// </summary>
         private DbCommand transCommand;
 
-        /// <summary>
-        /// 当前选择的数据库类型
-        /// </summary>
-        private DataBaseType dbType;
-
+       
         /// <summary>
         /// 连接字符串
         /// </summary>
         private string connectionStr;
-
-        private string selectName;
+        
 
         #endregion
 
@@ -113,21 +108,7 @@ namespace DbHelper
             }
         }
 
-        /// <summary>
-        /// 设置或获取当前选择的驱动名称
-        /// </summary>
-        public string SelectProviderName
-        {
-            get { return this.selectName; }
-            set
-            {
-                if (this.selectName != value)
-                {
-                    this.selectName = value;
-                    Register(value);
-                }
-            }
-        }
+     
 
         #endregion
 
@@ -144,68 +125,32 @@ namespace DbHelper
                 {
                     throw new ArgumentException($"未注册 DbProviderGlobal 实例,请先调用 DbProviderGlobal.Register(DbProviderFactory providerFactory)..");
                 }
-                return new DbContext("", DataBaseType.Factory);
+                return new DbContext("");
             }
         }
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="connectionStr">连接字符串</param>
-        /// <param name="dbType">数据库类型,默认使用app.config中的设置</param>
-        /// <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        public DbContext(string connectionStr, DataBaseType dbType, string selectName = "")
+        public DbContext(string connectionStr)
         {
             this.connectionStr = connectionStr;
-            this.dbType = dbType;
-
-            Register(selectName);
+            this.DbProvider = DbProviderGlobal.ProviderFactory;
+            parameters = new List<DbParameter>();
+            command = null;
+            transCommand = null;
+            ErroMsg = "";
         }
 
         /// <summary>
         /// 构造器
         /// </summary>
         /// <param name="conStrBuilder">连接字符串对象</param>
-        public DbContext(BaseConStrBuilder conStrBuilder)
-        {
-
-            if (conStrBuilder is PostgreSqlConStrBuilder)
-            {
-                dbType = DataBaseType.PostgreSql;
-            }
-            else if (conStrBuilder is OracleConStrBuilder)
-            {
-                dbType = DataBaseType.Oracle;
-            }
-            else if (conStrBuilder is SqlServerConStrBuilder)
-            {
-                dbType = DataBaseType.SqlServer;
-            }
-            else
-            {
-                dbType = DataBaseType.Config;
-            }
-
-            this.connectionStr = conStrBuilder.ToString();
-
-            Register("");
-        }
-
-
-        /// <summary>
-        /// 构造器
-        /// </summary>
-        public DbContext() : this("")
+        public DbContext(BaseConStrBuilder conStrBuilder):this(conStrBuilder.ToString())
         {
         }
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="selectName">在配置文件中所选择的connectionStrings节点下的name</param>
-        public DbContext(string selectName) : this("", DataBaseType.Config, selectName)
-        {
 
-        }
 
         #endregion
 
@@ -229,6 +174,10 @@ namespace DbHelper
         {
             try
             {
+                if (connection==null)
+                {
+                    connection = this.DbProvider.CreateConnection();
+                }
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -333,6 +282,32 @@ namespace DbHelper
         }
 
         /// <summary>
+        /// 事务内增加,删除,更新
+        /// </summary>
+        /// <param name="query">sql语句</param>
+        /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <returns></returns>
+        public bool TransctionExcuteNonQuery(string query, CommandType commandType = CommandType.Text)
+        {
+            try
+            {
+                SetTransCommand(query, commandType);
+                transCommand.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception exc)
+            {
+                ErroMsg = exc.Message;
+                TransctionRollBack();
+                return false;
+            }
+            finally
+            {
+                parameters.Clear();
+            }
+        }
+
+        /// <summary>
         /// 获取单个的值
         /// </summary>
         /// <param name="query">sql语句</param>
@@ -357,12 +332,47 @@ namespace DbHelper
         }
 
         /// <summary>
+        /// 事务内获取单个的值
+        /// </summary>
+        /// <param name="query">sql语句</param>
+        /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <returns>返回查询结果</returns>
+        public object TransctionExcuteSacler(string query, CommandType commandType = CommandType.Text)
+        {
+            try
+            {
+                SetTransCommand(query, commandType);
+                transCommand.ExecuteScalar();
+                return true;
+            }
+            catch (Exception exc)
+            {
+                ErroMsg = exc.Message;
+                TransctionRollBack();
+                return false;
+            }
+            finally
+            {
+                parameters.Clear();
+            }
+        }
+
+        /// <summary>
         /// 调用有无返回值的存储过程
         /// </summary>
         /// <param name="proName">存储过程或函数名</param>
         public void ExcuteProcedure(string proName)
         {
             this.ExcuteSacler(proName, CommandType.StoredProcedure);
+        }
+
+        /// <summary>
+        /// 事务内调用有无返回值的存储过程
+        /// </summary>
+        /// <param name="proName">存储过程或函数名</param>
+        public void TransctionExcuteProcedure(string proName)
+        {
+            this.TransctionExcuteNonQuery(proName, CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -374,6 +384,17 @@ namespace DbHelper
         public object ExcuteProcedure(string proName, CommandType commandType)
         {
             return this.ExcuteSacler(proName, commandType);
+        }
+
+        /// <summary>
+        /// 事务内调用存储过程
+        /// </summary>
+        /// <param name="proName">存储过程或函数名</param>
+        /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <returns>返回调用之后的返回值</returns>
+        public object TransctionExcuteProcedure(string proName, CommandType commandType)
+        {
+            return this.TransctionExcuteSacler(proName, commandType);
         }
 
         /// <summary>
@@ -472,6 +493,7 @@ namespace DbHelper
             }
         }
 
+
         /// <summary>
         /// 事务更新
         /// </summary>
@@ -494,6 +516,7 @@ namespace DbHelper
                 builder.ConflictOption = conflictOption;
                 adapter.Update(dt);
                 result = true;
+                adapter.Dispose();
             }
             catch (Exception ex)
             {
@@ -617,32 +640,6 @@ namespace DbHelper
             return dt;
         }
 
-        /// <summary>
-        /// 增加一个事务处理
-        /// </summary>
-        /// <param name="sql">sql处理语句</param>
-        /// <param name="commandType">指定如何解释命令字符串</param>
-        /// <returns>返回正确与否</returns>
-        public bool TransactionAdd(string sql, CommandType commandType = CommandType.Text)
-        {
-            SetTransCommand(sql);
-            try
-            {
-                transCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (Exception exc)
-            {
-                ErroMsg = exc.Message;
-                TransctionRollBack();
-                return false;
-            }
-            finally
-            {
-                parameters.Clear();
-            }
-        }
-
 
         /// <summary>
         /// 提交事务
@@ -699,77 +696,7 @@ namespace DbHelper
             }
         }
 
-        /// <summary>
-        /// 注册
-        /// </summary>
-        /// <param name="selectName">配置文件对应数据库名称</param>
-        private void Register(string selectName)
-        {
-            this.selectName = selectName;
-            parameters = new List<DbParameter>();
-            bool re = true;
-            switch (this.dbType)
-            {
-                case DataBaseType.Config:
-                    re = RegisterDb(selectName);
-                    break;
-                case DataBaseType.SqlServer:
-                    DbProvider = System.Data.SqlClient.SqlClientFactory.Instance;
-                    break;
-                case DataBaseType.Oracle:
-                    DbProvider = Oracle.DataAccess.Client.OracleClientFactory.Instance;
-                    break;
-                case DataBaseType.PostgreSql:
-                    DbProvider = Npgsql.NpgsqlFactory.Instance;
-                    break;
-                case DataBaseType.Factory:
-                    DbProvider = DbProviderGlobal.ProviderFactory;
-                    break;
-            }
-
-            if (re)
-            {
-                connection = DbProvider.CreateConnection();
-                command = null;
-                transCommand = null;
-                ErroMsg = "";
-            }
-            else
-            {
-                connection = null;
-            }
-
-        }
-
-        /// <summary>
-        /// 注册数据库对象
-        /// </summary>
-        /// <param name="selectName"></param>
-        private bool RegisterDb(string selectName)
-        {
-            var provider = ConfigurationManager.ConnectionStrings[selectName];
-            if (provider == null)
-            {
-                ErroMsg = ($"没有找到名称为 {selectName} 的项,请检查..");
-                DbProvider = null;
-                return false;
-            }
-            try
-            {
-                if (string.IsNullOrWhiteSpace(this.connectionStr))
-                {
-                    this.connectionStr = provider.ConnectionString;
-                }
-                string _providerName = provider.ProviderName;
-                DbProvider = DbProviderFactories.GetFactory(_providerName);
-                return true;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
+        
         /// <summary>
         /// 设置事务属性
         /// </summary>
@@ -965,6 +892,6 @@ namespace DbHelper
         }
         #endregion
         #endregion
-        
+
     }
 }
