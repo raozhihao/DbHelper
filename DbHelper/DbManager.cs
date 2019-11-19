@@ -198,7 +198,7 @@ namespace DbHelper
             {
                 command = CreateCommand(query, commandType);
 
-                 command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
                 return true;
             }
             catch (Exception ex)
@@ -278,8 +278,7 @@ namespace DbHelper
             try
             {
                 SetTransCommand(query, commandType);
-                transCommand.ExecuteScalar();
-                return true;
+                return transCommand.ExecuteScalar();
             }
             catch (Exception exc)
             {
