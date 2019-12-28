@@ -11,23 +11,57 @@ namespace SimpleDemoTest
     {
         static void Main(string[] args)
         {
-            string conStr = "";
-
-            //全局注册使用的数据库类型
-            DbHelper.DbProviderGlobal.Register(Npgsql.NpgsqlFactory.Instance);
-            //第一种,直接实例化
-            DbHelper.DbManager manager = new DbManager(conStr);
-
-            ////第二种,获取,但要指定连接字符串
-            //DbHelper.DbManager manager = DbManager.Instance;
-            ////给定连接字符串
-            //manager.ConnectionString = conStr;
-            bool re = manager.GetDataTable("SELECT * FROM PARTS LIMIT 10", out var dt);
+            //连接字符串对象
+            var conn = new DbHelper.PostgreSqlConStrBuilder("127.0.0.1", "5432", "postgres", "postgres", "123456");
+            //推荐使用DbManager,DbContext已不再维护
+            DbManager db = new DbManager(conn, Npgsql.NpgsqlFactory.Instance);
+            bool re = db.GetDataTable("SELECT * FROM PG_TABLES", out var dt);
             if (!re)
             {
-                Console.WriteLine(manager.ErroMsg);
+                Console.WriteLine(db.ErroMsg);
+            }
+            
+
+            //执行 増,删,改
+            string query = "INSERT INTO TEST(NAME,GENDER) VALUES(@NAME,@GEN)";
+            db.AddParameter("NAME", "AAA");
+            db.AddParameter("GEN", "bbb");
+            re = db.ExcuteNonQuery(query);//如果需要执行存储过程或函数,请使用此方法的可选参数,或使用ExcuteProcedure
+            if (!re)
+            {
+                Console.WriteLine(db.ErroMsg);
             }
 
+            //执行单个查询
+            object obj = db.ExcuteSacler("SELECT COUNT(1) FROM PG_TABLES");
+            if (obj==null)
+            {
+                Console.WriteLine(db.ErroMsg);
+            }
+
+            //执行事务,
+            //增加,删除,修改,使用 TransctionExcuteNonQuery,事务内单查询使用 TransctionExcuteSacler
+            //事务内执行函数/存储过程,使用 TransctionExcuteNonQuery的可选参数或 TransctionExcuteProcedure
+            //事务内执行更新表 TransactionUpdateDataTable
+            //事务内查询表 TransactionGetDataTable
+            query = "INSERT INTO TEST(NAME,GENDER) VALUES('ABC','11A')";
+            re = db.TransctionExcuteNonQuery(query);
+            if (!re)
+            {
+                Console.WriteLine(db.ErroMsg);//内部自动关闭事务连接
+            }
+
+            query = "INSERT INTO TEST(NAME,GENDER) VALUES('BBA','DF')";
+            re = db.TransctionExcuteNonQuery(query);
+            if (!re)
+            {
+                Console.WriteLine(db.ErroMsg);//内部自动关闭事务连接
+            }
+
+            if (re)
+            {
+                db.TransctionCommit();//提交事务 
+            }
             Console.ReadKey();
         }
     }

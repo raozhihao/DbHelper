@@ -1,4 +1,5 @@
 ﻿
+using DbHelper.DbAttribute;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,14 +28,14 @@ namespace DbHelper
         /// <summary>
         /// 数据源适配对象
         /// </summary>
-        private DbProviderFactory DbProvider;
+        private DbProviderFactory dbProvider;
 
 
         /// <summary>
         /// 事务命令对象
         /// </summary>
         private DbCommand transCommand;
-        
+
 
         #endregion
 
@@ -43,61 +44,58 @@ namespace DbHelper
         /// <summary>
         /// 返回最后一次获取到的错误信息
         /// </summary>
-        public string ErroMsg { get; private set; }
+        public string ErroMsg { get; protected set; }
 
 
         /// <summary>
         /// 设置或获取连接字符串
         /// </summary>
         public string ConnectionString { get; set; }
-        
+
 
         #endregion
 
         #region 构造器
 
         /// <summary>
-        /// 获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
-        /// </summary>
-        public static DbManager Instance
-        {
-            get
-            {
-                if (!DbProviderGlobal.HaveFactory)
-                {
-                    throw new ArgumentException($"未注册 DbProviderGlobal 实例,请先调用 DbProviderGlobal.Register(DbProviderFactory providerFactory)..");
-                }
-                return new DbManager("");
-            }
-        }
-        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="connectionStr">连接字符串</param>
-        public DbManager(string connectionStr)
+        /// <param name="dbProvider">用于创建提供程序对数据源类的实现的实例</param>
+        public DbManager(string connectionStr, DbProviderFactory dbProvider)
         {
             this.ConnectionString = connectionStr;
             parameters = new List<DbParameter>();
 
-            if (!DbProviderGlobal.HaveFactory)
+            if (dbProvider == null)
             {
-                throw new ArgumentException($"未注册 DbProviderGlobal 实例,请先调用 DbProviderGlobal.Register(DbProviderFactory providerFactory)..");
+                throw new ArgumentException($"未提供数据库访问实例..");
             }
             else
             {
-                DbProvider = DbProviderGlobal.ProviderFactory;
+                this.dbProvider = dbProvider;
             }
         }
 
         /// <summary>
-        /// 构造器
+        /// 构造函数
         /// </summary>
         /// <param name="conStrBuilder">连接字符串对象</param>
-        public DbManager(BaseConStrBuilder conStrBuilder):this(conStrBuilder.ToString())
+        /// <param name="dbProvider">用于创建提供程序对数据源类的实现的实例</param>
+        public DbManager(BaseConStrBuilder conStrBuilder, DbProviderFactory dbProvider) : this(conStrBuilder.ToString(), dbProvider)
+        {
+
+        }
+
+        /// <summary>
+        /// 构造器,该构造函数默认使用SqlServer数据源
+        /// </summary>
+        /// <param name="conStrBuilder">连接字符串对象</param>
+        public DbManager(BaseConStrBuilder conStrBuilder) : this(conStrBuilder.ToString(), System.Data.SqlClient.SqlClientFactory.Instance)
         {
         }
-        
-       
+
+
         #endregion
 
         #region 公共方法
@@ -155,7 +153,7 @@ namespace DbHelper
         /// <param name="direction">类型</param>
         public void AddParameter(string name, object value, ParameterDirection direction)
         {
-            var par = DbProvider.CreateParameter();
+            var par = dbProvider.CreateParameter();
             par.ParameterName = name;
             par.Value = value;
             par.Direction = direction;
@@ -198,7 +196,7 @@ namespace DbHelper
             {
                 command = CreateCommand(query, commandType);
 
-                 command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
                 return true;
             }
             catch (Exception ex)
@@ -340,7 +338,7 @@ namespace DbHelper
         /// <param name="dt">返回的数据集</param>
         /// <param name="tableName">为数据集命名</param>
         /// <param name="columnUpper">是否将列名转换为大写</param>
-        /// <returns>返回正确与否</returns>
+        /// <returns>返回成功与否</returns>
         public bool GetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
         {
             if (string.IsNullOrWhiteSpace(tableName))
@@ -353,7 +351,7 @@ namespace DbHelper
             try
             {
                 command = CreateCommand(query, CommandType.Text);
-                adapter = DbProvider.CreateDataAdapter();
+                adapter = dbProvider.CreateDataAdapter();
 
                 adapter.SelectCommand = command;
 
@@ -379,9 +377,59 @@ namespace DbHelper
                 parameters.Clear();
                 adapter?.Dispose();
                 DisposeCommand(command);
-               
+
             }
         }
+
+        /// <summary>
+        /// 获取DataTable
+        /// </summary>
+        /// <param name="query">sql查询语句</param>
+        /// <param name="dt">返回的数据集</param>
+        /// <param name="tableName">为数据集命名</param>
+        /// <param name="columnUpper">是否将列名转换为大写</param>
+        /// <returns>返回成功与否</returns>
+        public bool TransactionGetDataTable(string query, out DataTable dt, string tableName = "", bool columnUpper = true)
+        {
+            bool result;
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                tableName = "dt";
+            }
+            dt = new DataTable(tableName);
+            DbDataAdapter adapter = null;
+            try
+            {
+                SetTransCommand(query);
+                adapter = dbProvider.CreateDataAdapter();
+                adapter.SelectCommand = this.transCommand;
+
+                adapter.Fill(dt);
+                if (columnUpper)
+                {
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        string colName = dt.Columns[i].ColumnName;
+                        dt.Columns[i].ColumnName = colName.ToUpper();
+                    }
+                }
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                this.ErroMsg = ex.Message;
+                this.TransctionRollBack();
+            }
+            finally
+            {
+                parameters.Clear();
+                adapter?.Dispose();
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// 更新表格
@@ -409,9 +457,9 @@ namespace DbHelper
             try
             {
                 command = CreateCommand(query, CommandType.Text);
-                adapter = DbProvider.CreateDataAdapter();
+                adapter = dbProvider.CreateDataAdapter();
                 adapter.SelectCommand = command;
-                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
+                DbCommandBuilder builder = dbProvider.CreateCommandBuilder();
                 builder.DataAdapter = adapter;
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
@@ -432,7 +480,7 @@ namespace DbHelper
             }
         }
 
-        
+
 
         /// <summary>
         /// 事务更新
@@ -448,13 +496,15 @@ namespace DbHelper
             try
             {
                 SetTransCommand(query);
-                DbDataAdapter adapter = DbProvider.CreateDataAdapter();
+                DbDataAdapter adapter = dbProvider.CreateDataAdapter();
                 adapter.SelectCommand = this.transCommand;
-                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
+                DbCommandBuilder builder = dbProvider.CreateCommandBuilder();
                 builder.DataAdapter = adapter;
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
                 adapter.Update(dt);
+                builder.Dispose();
+                adapter.Dispose();
                 result = true;
             }
             catch (Exception ex)
@@ -465,6 +515,7 @@ namespace DbHelper
             }
             return result;
         }
+
 
         /// <summary>
         /// 获取指定对象集合
@@ -582,7 +633,7 @@ namespace DbHelper
             return dt;
         }
 
-      
+
         /// <summary>
         /// 提交事务
         /// </summary>
@@ -676,7 +727,7 @@ namespace DbHelper
             DbConnection connection = null;
             try
             {
-                connection = DbProvider.CreateConnection();
+                connection = dbProvider.CreateConnection();
                 connection.ConnectionString = this.ConnectionString;
                 connection.Open();
                 command = connection.CreateCommand();
@@ -696,8 +747,8 @@ namespace DbHelper
                 throw ex;
             }
         }
-        
-        
+
+
         /// <summary>
         /// 设置事务属性
         /// </summary>
@@ -708,7 +759,7 @@ namespace DbHelper
             ErroMsg = "";
             if (transCommand == null)
             {
-                var connection = DbProvider.CreateConnection();
+                var connection = dbProvider.CreateConnection();
                 connection.ConnectionString = this.ConnectionString;
                 try
                 {

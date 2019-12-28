@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace DbHelper
+namespace DbHelper.DbAttribute
 {
     /// <summary>
     /// 原始数据库中的字段名称,当自定义类的名称不与数据库相同时使用
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
     public class DataPropertyAttribute : Attribute
     {
         /// <summary>

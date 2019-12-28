@@ -142,21 +142,42 @@
             </summary>
             <returns>返回对象的字符串</returns>
         </member>
-        <member name="T:DbHelper.DataPropertyAttribute">
+        <member name="T:DbHelper.DbAttribute.DataPrimaryKeyAttribute">
+            <summary>
+            映射表字段主键
+            </summary>
+        </member>
+        <member name="T:DbHelper.DbAttribute.DataPropertyAttribute">
             <summary>
             原始数据库中的字段名称,当自定义类的名称不与数据库相同时使用
             </summary>
         </member>
-        <member name="P:DbHelper.DataPropertyAttribute.DataName">
+        <member name="P:DbHelper.DbAttribute.DataPropertyAttribute.DataName">
             <summary>
             数据库原始字段名称
             </summary>
         </member>
-        <member name="M:DbHelper.DataPropertyAttribute.#ctor(System.String)">
+        <member name="M:DbHelper.DbAttribute.DataPropertyAttribute.#ctor(System.String)">
             <summary>
             确定自定义类属性映射到数据库字段上的名称
             </summary>
             <param name="dataName">对应数据库字段上的名称</param>
+        </member>
+        <member name="T:DbHelper.DbAttribute.DataTableAttribute">
+            <summary>
+            映射表名称
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbAttribute.DataTableAttribute.DataTableName">
+            <summary>
+            表名称
+            </summary>
+        </member>
+        <member name="M:DbHelper.DbAttribute.DataTableAttribute.#ctor(System.String)">
+            <summary>
+            映射表名称
+            </summary>
+            <param name="tableName">表名称</param>
         </member>
         <member name="T:DbHelper.DbContext">
             <summary>
@@ -468,7 +489,7 @@
             存储参数
             </summary>
         </member>
-        <member name="F:DbHelper.DbManager.DbProvider">
+        <member name="F:DbHelper.DbManager.dbProvider">
             <summary>
             数据源适配对象
             </summary>
@@ -488,20 +509,23 @@
             设置或获取连接字符串
             </summary>
         </member>
-        <member name="P:DbHelper.DbManager.Instance">
-            <summary>
-            获取DbContext的实例,如要使用此种,请预先使用DbProviderGlobal注册
-            </summary>
-        </member>
-        <member name="M:DbHelper.DbManager.#ctor(System.String)">
+        <member name="M:DbHelper.DbManager.#ctor(System.String,System.Data.Common.DbProviderFactory)">
             <summary>
             构造函数
             </summary>
             <param name="connectionStr">连接字符串</param>
+            <param name="dbProvider">用于创建提供程序对数据源类的实现的实例</param>
+        </member>
+        <member name="M:DbHelper.DbManager.#ctor(DbHelper.BaseConStrBuilder,System.Data.Common.DbProviderFactory)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="conStrBuilder">连接字符串对象</param>
+            <param name="dbProvider">用于创建提供程序对数据源类的实现的实例</param>
         </member>
         <member name="M:DbHelper.DbManager.#ctor(DbHelper.BaseConStrBuilder)">
             <summary>
-            构造器
+            构造器,该构造函数默认使用SqlServer数据源
             </summary>
             <param name="conStrBuilder">连接字符串对象</param>
         </member>
@@ -618,7 +642,17 @@
             <param name="dt">返回的数据集</param>
             <param name="tableName">为数据集命名</param>
             <param name="columnUpper">是否将列名转换为大写</param>
-            <returns>返回正确与否</returns>
+            <returns>返回成功与否</returns>
+        </member>
+        <member name="M:DbHelper.DbManager.TransactionGetDataTable(System.String,System.Data.DataTable@,System.String,System.Boolean)">
+            <summary>
+            获取DataTable
+            </summary>
+            <param name="query">sql查询语句</param>
+            <param name="dt">返回的数据集</param>
+            <param name="tableName">为数据集命名</param>
+            <param name="columnUpper">是否将列名转换为大写</param>
+            <returns>返回成功与否</returns>
         </member>
         <member name="M:DbHelper.DbManager.UpdateTable(System.String,System.Data.DataTable)">
             <summary>
