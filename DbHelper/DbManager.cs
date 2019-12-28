@@ -276,8 +276,7 @@ namespace DbHelper
             try
             {
                 SetTransCommand(query, commandType);
-                transCommand.ExecuteScalar();
-                return true;
+                return transCommand.ExecuteScalar();
             }
             catch (Exception exc)
             {
