@@ -3,7 +3,6 @@ using DbHelper.DbAttribute;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace DbHelper
         /// <summary>
         /// 存储参数
         /// </summary>
-        private List<DbParameter> parameters;
+        protected List<DbParameter> parameters;
 
         /// <summary>
         /// 数据源适配对象
@@ -123,7 +122,7 @@ namespace DbHelper
         /// 添加参数,请使用当前确切的参数类型
         /// </summary>
         /// <param name="parameter">参数对象</param>
-        public void AddParameter(DbParameter parameter)
+        public virtual void AddParameter(DbParameter parameter)
         {
             this.parameters.Add(parameter);
         }
@@ -132,7 +131,7 @@ namespace DbHelper
         /// 创建参数对象集合
         /// </summary>
         /// <param name="list">参数对象集合</param>
-        public void CreateParameters(IEnumerable<ParameterHelper> list)
+        public virtual void CreateParameters(IEnumerable<ParameterHelper> list)
         {
             if (list == null)
             {
@@ -151,7 +150,7 @@ namespace DbHelper
         /// <param name="name">参数名</param>
         /// <param name="value">参数值</param>
         /// <param name="direction">类型</param>
-        public void AddParameter(string name, object value, ParameterDirection direction)
+        public virtual void AddParameter(string name, object value, ParameterDirection direction)
         {
             var par = dbProvider.CreateParameter();
             par.ParameterName = name;
@@ -165,7 +164,7 @@ namespace DbHelper
         /// </summary>
         /// <param name="name">参数名</param>
         /// <param name="value">参数值</param>
-        public void AddParameter(string name, object value)
+        public virtual void AddParameter(string name, object value)
         {
             this.AddParameter(name, value, ParameterDirection.Input);
         }
@@ -175,7 +174,7 @@ namespace DbHelper
         /// 添加参数集合
         /// </summary>
         /// <param name="parameters">参数对象集合</param>
-        public void AddParameters(params DbParameter[] parameters)
+        public virtual void AddParameters(params DbParameter[] parameters)
         {
             foreach (var item in parameters)
             {
