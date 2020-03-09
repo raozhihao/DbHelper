@@ -489,11 +489,6 @@
             存储参数
             </summary>
         </member>
-        <member name="F:DbHelper.DbManager.dbProvider">
-            <summary>
-            数据源适配对象
-            </summary>
-        </member>
         <member name="F:DbHelper.DbManager.transCommand">
             <summary>
             事务命令对象
@@ -502,6 +497,11 @@
         <member name="P:DbHelper.DbManager.ErroMsg">
             <summary>
             返回最后一次获取到的错误信息
+            </summary>
+        </member>
+        <member name="P:DbHelper.DbManager.DbProvider">
+            <summary>
+            数据源适配对象
             </summary>
         </member>
         <member name="P:DbHelper.DbManager.ConnectionString">
@@ -590,20 +590,22 @@
             <param name="commandType">指定如何解释命令字符串</param>
             <returns></returns>
         </member>
-        <member name="M:DbHelper.DbManager.ExcuteSacler(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbManager.ExcuteSacler(System.String,System.Object@,System.Data.CommandType)">
             <summary>
             获取单个的值
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
+            <param name="obj">输出最后获取</param>
             <returns>返回查询结果</returns>
         </member>
-        <member name="M:DbHelper.DbManager.TransctionExcuteSacler(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbManager.TransctionExcuteSacler(System.String,System.Object@,System.Data.CommandType)">
             <summary>
             事务内获取单个的值
             </summary>
             <param name="query">sql语句</param>
             <param name="commandType">指定如何解释命令字符串</param>
+            <param name="obj">输出最后获取</param>
             <returns>返回查询结果</returns>
         </member>
         <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String)">
@@ -618,20 +620,22 @@
             </summary>
             <param name="proName">存储过程或函数名</param>
         </member>
-        <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbManager.ExcuteProcedure(System.String,System.Object@,System.Data.CommandType)">
             <summary>
             调用存储过程
             </summary>
             <param name="proName">存储过程或函数名</param>
             <param name="commandType">指定如何解释命令字符串</param>
+            <param name="obj">输出最后获取</param>
             <returns>返回调用之后的返回值</returns>
         </member>
-        <member name="M:DbHelper.DbManager.TransctionExcuteProcedure(System.String,System.Data.CommandType)">
+        <member name="M:DbHelper.DbManager.TransctionExcuteProcedure(System.String,System.Object@,System.Data.CommandType)">
             <summary>
             事务内调用存储过程
             </summary>
             <param name="proName">存储过程或函数名</param>
             <param name="commandType">指定如何解释命令字符串</param>
+            <param name="obj">输出最后获取</param>
             <returns>返回调用之后的返回值</returns>
         </member>
         <member name="M:DbHelper.DbManager.GetDataTable(System.String,System.Data.DataTable@,System.String,System.Boolean)">

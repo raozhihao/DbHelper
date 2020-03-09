@@ -23,13 +23,7 @@ namespace DbHelper
         /// 存储参数
         /// </summary>
         protected List<DbParameter> parameters;
-
-        /// <summary>
-        /// 数据源适配对象
-        /// </summary>
-        private DbProviderFactory dbProvider;
-
-
+        
         /// <summary>
         /// 事务命令对象
         /// </summary>
@@ -45,13 +39,17 @@ namespace DbHelper
         /// </summary>
         public string ErroMsg { get; protected set; }
 
+        /// <summary>
+        /// 数据源适配对象
+        /// </summary>
+        public DbProviderFactory DbProvider { get; set; }
 
         /// <summary>
         /// 设置或获取连接字符串
         /// </summary>
         public string ConnectionString { get; set; }
 
-
+      
         #endregion
 
         #region 构造器
@@ -72,7 +70,7 @@ namespace DbHelper
             }
             else
             {
-                this.dbProvider = dbProvider;
+                this.DbProvider = dbProvider;
             }
         }
 
@@ -152,7 +150,7 @@ namespace DbHelper
         /// <param name="direction">类型</param>
         public virtual void AddParameter(string name, object value, ParameterDirection direction)
         {
-            var par = dbProvider.CreateParameter();
+            var par = DbProvider.CreateParameter();
             par.ParameterName = name;
             par.Value = value;
             par.Direction = direction;
@@ -242,20 +240,23 @@ namespace DbHelper
         /// </summary>
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <param name="obj">输出最后获取</param>
         /// <returns>返回查询结果</returns>
-        public object ExcuteSacler(string query, CommandType commandType = CommandType.Text)
+        public bool ExcuteSacler(string query,out object obj, CommandType commandType = CommandType.Text)
         {
             DbCommand command = null;
+            obj = null;
             try
             {
                 command = CreateCommand(query, commandType);
-                return command.ExecuteScalar();
+                obj= command.ExecuteScalar();
+                return true;
             }
             catch (Exception ex)
             {
                 ErroMsg = ex.Message;
 
-                return null;
+                return false;
             }
             finally
             {
@@ -269,13 +270,16 @@ namespace DbHelper
         /// </summary>
         /// <param name="query">sql语句</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <param name="obj">输出最后获取</param>
         /// <returns>返回查询结果</returns>
-        public object TransctionExcuteSacler(string query, CommandType commandType = CommandType.Text)
+        public bool TransctionExcuteSacler(string query,out object obj, CommandType commandType = CommandType.Text)
         {
+            obj = null;
             try
             {
                 SetTransCommand(query, commandType);
-                return transCommand.ExecuteScalar();
+                obj= transCommand.ExecuteScalar();
+                return true;
             }
             catch (Exception exc)
             {
@@ -295,7 +299,7 @@ namespace DbHelper
         /// <param name="proName">存储过程或函数名</param>
         public void ExcuteProcedure(string proName)
         {
-            this.ExcuteSacler(proName, CommandType.StoredProcedure);
+            this.ExcuteSacler(proName,out _, CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -312,10 +316,11 @@ namespace DbHelper
         /// </summary>
         /// <param name="proName">存储过程或函数名</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <param name="obj">输出最后获取</param>
         /// <returns>返回调用之后的返回值</returns>
-        public object ExcuteProcedure(string proName, CommandType commandType)
+        public bool ExcuteProcedure(string proName,out object obj, CommandType commandType)
         {
-            return this.ExcuteSacler(proName, commandType);
+            return this.ExcuteSacler(proName,out obj, commandType);
         }
 
         /// <summary>
@@ -323,10 +328,11 @@ namespace DbHelper
         /// </summary>
         /// <param name="proName">存储过程或函数名</param>
         /// <param name="commandType">指定如何解释命令字符串</param>
+        /// <param name="obj">输出最后获取</param>
         /// <returns>返回调用之后的返回值</returns>
-        public object TransctionExcuteProcedure(string proName, CommandType commandType)
+        public object TransctionExcuteProcedure(string proName,out object obj, CommandType commandType)
         {
-            return this.TransctionExcuteSacler(proName, commandType);
+            return this.TransctionExcuteSacler(proName,out obj, commandType);
         }
 
         /// <summary>
@@ -349,7 +355,7 @@ namespace DbHelper
             try
             {
                 command = CreateCommand(query, CommandType.Text);
-                adapter = dbProvider.CreateDataAdapter();
+                adapter = DbProvider.CreateDataAdapter();
 
                 adapter.SelectCommand = command;
 
@@ -399,7 +405,7 @@ namespace DbHelper
             try
             {
                 SetTransCommand(query);
-                adapter = dbProvider.CreateDataAdapter();
+                adapter = DbProvider.CreateDataAdapter();
                 adapter.SelectCommand = this.transCommand;
 
                 adapter.Fill(dt);
@@ -455,9 +461,9 @@ namespace DbHelper
             try
             {
                 command = CreateCommand(query, CommandType.Text);
-                adapter = dbProvider.CreateDataAdapter();
+                adapter = DbProvider.CreateDataAdapter();
                 adapter.SelectCommand = command;
-                DbCommandBuilder builder = dbProvider.CreateCommandBuilder();
+                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
                 builder.DataAdapter = adapter;
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
@@ -494,9 +500,9 @@ namespace DbHelper
             try
             {
                 SetTransCommand(query);
-                DbDataAdapter adapter = dbProvider.CreateDataAdapter();
+                DbDataAdapter adapter = DbProvider.CreateDataAdapter();
                 adapter.SelectCommand = this.transCommand;
-                DbCommandBuilder builder = dbProvider.CreateCommandBuilder();
+                DbCommandBuilder builder = DbProvider.CreateCommandBuilder();
                 builder.DataAdapter = adapter;
                 builder.SetAllValues = setAllValues;
                 builder.ConflictOption = conflictOption;
@@ -701,7 +707,7 @@ namespace DbHelper
         /// 释放command的所有资源
         /// </summary>
         /// <param name="command"></param>
-        private void DisposeCommand(DbCommand command)
+        protected void DisposeCommand(DbCommand command)
         {
             if (command != null)
             {
@@ -718,14 +724,14 @@ namespace DbHelper
         /// <param name="query"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        private DbCommand CreateCommand(string query, CommandType text)
+        protected DbCommand CreateCommand(string query, CommandType text)
         {
             ErroMsg = "";
             DbCommand command = null;
             DbConnection connection = null;
             try
             {
-                connection = dbProvider.CreateConnection();
+                connection = DbProvider.CreateConnection();
                 connection.ConnectionString = this.ConnectionString;
                 connection.Open();
                 command = connection.CreateCommand();
@@ -752,12 +758,12 @@ namespace DbHelper
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="commandType"></param>
-        private void SetTransCommand(string sql, CommandType commandType = CommandType.Text)
+        protected void SetTransCommand(string sql, CommandType commandType = CommandType.Text)
         {
             ErroMsg = "";
             if (transCommand == null)
             {
-                var connection = dbProvider.CreateConnection();
+                var connection = DbProvider.CreateConnection();
                 connection.ConnectionString = this.ConnectionString;
                 try
                 {
@@ -793,7 +799,7 @@ namespace DbHelper
         /// <param name="dt">对象的表</param>
         /// <param name="index">当前需要获取的表中的行索引</param>
         /// <returns></returns>
-        private T GetObjectInfo<T>(DataTable dt, int index)
+        protected T GetObjectInfo<T>(DataTable dt, int index)
         {
             T t = default(T);
             T tobj = Activator.CreateInstance<T>();//创建一个对象
@@ -805,7 +811,8 @@ namespace DbHelper
                 for (int i = 0; i < columnCount; i++)
                 {
                     //判断当前的属性是否实现了对应的特性
-                    var attr = item.GetCustomAttribute<DataPropertyAttribute>();
+                   var attr= (DataPropertyAttribute)(item.GetCustomAttributes(typeof(DataPropertyAttribute), false)[0]);
+                   // var attr = item.GetCustomAttribute<DataPropertyAttribute>();
                     string currentName = item.Name.ToLower();
                     if (attr != null)
                     {

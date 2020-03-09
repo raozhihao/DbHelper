@@ -33,7 +33,8 @@ namespace SimpleDemoTest
             }
 
             //执行单个查询
-            object obj = db.ExcuteSacler("SELECT COUNT(1) FROM PG_TABLES");
+            object obj;
+              re=   db.ExcuteSacler("SELECT COUNT(1) FROM PG_TABLES",out obj);
             if (obj==null)
             {
                 Console.WriteLine(db.ErroMsg);

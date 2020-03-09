@@ -15,6 +15,7 @@ namespace DbHelper
     /// <summary>
     /// 提供对数据库访问的上下文类,该类使用长连接
     /// </summary>
+    [Obsolete("不再使用",false)]
     public class DbContext : IDisposable
     {
         #region 私有字段
@@ -786,7 +787,8 @@ namespace DbHelper
                 for (int i = 0; i < columnCount; i++)
                 {
                     //判断当前的属性是否实现了对应的特性
-                    var attr = item.GetCustomAttribute<DataPropertyAttribute>();
+                    //var attr = item.GetCustomAttribute<DataPropertyAttribute>();
+                    var attr = (DataPropertyAttribute)(item.GetCustomAttributes(typeof(DataPropertyAttribute), false)[0]);
                     string currentName = item.Name.ToLower();
                     if (attr != null)
                     {
