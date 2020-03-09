@@ -71,9 +71,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DbHelper\DbHelper.csproj">
+    <ProjectReference Include="..\RzhDbHelper\RzhDbHelper.csproj">
       <Project>{be276c74-43f0-42a2-9e4b-6e4a64ac0784}</Project>
-      <Name>DbHelper</Name>
+      <Name>RzhDbHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

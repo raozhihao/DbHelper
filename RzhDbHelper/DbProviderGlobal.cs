@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 
-namespace DbHelper
+namespace RzhDbHelper
 {
     /// <summary>
     /// 全局的注册DbProvider

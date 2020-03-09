@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace SimpleDemoTest
 {
-    [DbHelper.DbAttribute.DataTable("Parts")]
+    [RzhDbHelper.DbAttribute.DataTable("Parts")]
     public class Parts
     {
-        [DbHelper.DbAttribute.DataProperty("PID"),DbHelper.DbAttribute.DataPrimaryKey()]
+        [RzhDbHelper.DbAttribute.DataProperty("PID"),RzhDbHelper.DbAttribute.DataPrimaryKey()]
         public string Id { get; set; }
 
-        [DbHelper.DbAttribute.DataProperty("PTNAME")]
+        [RzhDbHelper.DbAttribute.DataProperty("PTNAME")]
         public string Name { get; set; }
 
-        [DbHelper.DbAttribute.DataProperty("PNUMS")]
+        [RzhDbHelper.DbAttribute.DataProperty("PNUMS")]
         public int Num { get; set; }
 
-        [DbHelper.DbAttribute.DataProperty("PREMAINGNUM")]
+        [RzhDbHelper.DbAttribute.DataProperty("PREMAINGNUM")]
         public int MarginNum { get; set; }
 
-        [DbHelper.DbAttribute.DataProperty("UPDATETIME")]
+        [RzhDbHelper.DbAttribute.DataProperty("UPDATETIME")]
         public DateTime UpdateTime { get; set; }
     }
 }

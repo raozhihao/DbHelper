@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RzhDbHelper", "DbHelper\RzhDbHelper.csproj", "{BE276C74-43F0-42A2-9E4B-6E4A64AC0784}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RzhDbHelper", "RzhDbHelper\RzhDbHelper.csproj", "{BE276C74-43F0-42A2-9E4B-6E4A64AC0784}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDemoTest", "SimpleDemoTest\SimpleDemoTest.csproj", "{18C468A9-52F1-43C7-A6BE-8606C3196C6D}"
 EndProject

@@ -1,5 +1,5 @@
 ﻿
-using DbHelper.DbAttribute;
+using RzhDbHelper.DbAttribute;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 
 
-namespace DbHelper
+namespace RzhDbHelper
 {
     /// <summary>
     /// 提供对数据库访问的上下文类
@@ -23,7 +23,7 @@ namespace DbHelper
         /// 存储参数
         /// </summary>
         protected List<DbParameter> parameters;
-        
+
         /// <summary>
         /// 事务命令对象
         /// </summary>
@@ -49,7 +49,7 @@ namespace DbHelper
         /// </summary>
         public string ConnectionString { get; set; }
 
-      
+
         #endregion
 
         #region 构造器
@@ -242,14 +242,14 @@ namespace DbHelper
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <param name="obj">输出最后获取</param>
         /// <returns>返回查询结果</returns>
-        public bool ExcuteSacler(string query,out object obj, CommandType commandType = CommandType.Text)
+        public bool ExcuteSacler(string query, out object obj, CommandType commandType = CommandType.Text)
         {
             DbCommand command = null;
             obj = null;
             try
             {
                 command = CreateCommand(query, commandType);
-                obj= command.ExecuteScalar();
+                obj = command.ExecuteScalar();
                 return true;
             }
             catch (Exception ex)
@@ -272,13 +272,13 @@ namespace DbHelper
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <param name="obj">输出最后获取</param>
         /// <returns>返回查询结果</returns>
-        public bool TransctionExcuteSacler(string query,out object obj, CommandType commandType = CommandType.Text)
+        public bool TransctionExcuteSacler(string query, out object obj, CommandType commandType = CommandType.Text)
         {
             obj = null;
             try
             {
                 SetTransCommand(query, commandType);
-                obj= transCommand.ExecuteScalar();
+                obj = transCommand.ExecuteScalar();
                 return true;
             }
             catch (Exception exc)
@@ -299,7 +299,7 @@ namespace DbHelper
         /// <param name="proName">存储过程或函数名</param>
         public void ExcuteProcedure(string proName)
         {
-            this.ExcuteSacler(proName,out _, CommandType.StoredProcedure);
+            this.ExcuteSacler(proName, out _, CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -318,9 +318,9 @@ namespace DbHelper
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <param name="obj">输出最后获取</param>
         /// <returns>返回调用之后的返回值</returns>
-        public bool ExcuteProcedure(string proName,out object obj, CommandType commandType)
+        public bool ExcuteProcedure(string proName, out object obj, CommandType commandType)
         {
-            return this.ExcuteSacler(proName,out obj, commandType);
+            return this.ExcuteSacler(proName, out obj, commandType);
         }
 
         /// <summary>
@@ -330,9 +330,9 @@ namespace DbHelper
         /// <param name="commandType">指定如何解释命令字符串</param>
         /// <param name="obj">输出最后获取</param>
         /// <returns>返回调用之后的返回值</returns>
-        public object TransctionExcuteProcedure(string proName,out object obj, CommandType commandType)
+        public object TransctionExcuteProcedure(string proName, out object obj, CommandType commandType)
         {
-            return this.TransctionExcuteSacler(proName,out obj, commandType);
+            return this.TransctionExcuteSacler(proName, out obj, commandType);
         }
 
         /// <summary>
@@ -811,8 +811,8 @@ namespace DbHelper
                 for (int i = 0; i < columnCount; i++)
                 {
                     //判断当前的属性是否实现了对应的特性
-                   var attr= (DataPropertyAttribute)(item.GetCustomAttributes(typeof(DataPropertyAttribute), false)[0]);
-                   // var attr = item.GetCustomAttribute<DataPropertyAttribute>();
+                    var attr = (DataPropertyAttribute)(item.GetCustomAttributes(typeof(DataPropertyAttribute), false)[0]);
+                    // var attr = item.GetCustomAttribute<DataPropertyAttribute>();
                     string currentName = item.Name.ToLower();
                     if (attr != null)
                     {
@@ -870,9 +870,8 @@ namespace DbHelper
         }
 
 
-
         #endregion
 
-
     }
+    
 }

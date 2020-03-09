@@ -1,5 +1,5 @@
 ﻿
-using DbHelper.DbAttribute;
+using RzhDbHelper.DbAttribute;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 
 
-namespace DbHelper
+namespace RzhDbHelper
 {
     /// <summary>
     /// 提供对数据库访问的上下文类,该类使用长连接

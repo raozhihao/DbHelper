@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 
-namespace DbHelper
+namespace RzhDbHelper
 {
     /// <summary>
     /// 提供数据库连接字符串对象的基类型

@@ -1,4 +1,4 @@
-﻿namespace DbHelper
+﻿namespace RzhDbHelper
 {
     /// <summary>
     /// SqlServer的数据库连接字符串对象

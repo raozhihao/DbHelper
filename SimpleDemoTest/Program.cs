@@ -1,4 +1,4 @@
-﻿using DbHelper;
+﻿using RzhDbHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +11,12 @@ namespace SimpleDemoTest
     {
         static void Main(string[] args)
         {
+
             //连接字符串对象
-            var conn = new DbHelper.PostgreSqlConStrBuilder("127.0.0.1", "5432", "postgres", "postgres", "123456");
+            var conn = new RzhDbHelper.PostgreSqlConStrBuilder("127.0.0.1", "5432", "postgres", "postgres", "123456");
             //推荐使用DbManager,DbContext已不再维护
             DbManager db = new DbManager(conn, Npgsql.NpgsqlFactory.Instance);
+            
             bool re = db.GetDataTable("SELECT * FROM PG_TABLES", out var dt);
             if (!re)
             {

@@ -1,4 +1,4 @@
-﻿namespace DbHelper
+﻿namespace RzhDbHelper
 {
     /// <summary>
     /// 参数信息帮助类
