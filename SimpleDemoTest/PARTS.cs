@@ -9,7 +9,7 @@ namespace SimpleDemoTest
     [RzhDbHelper.DbAttribute.DataTable("Parts")]
     public class Parts
     {
-        [RzhDbHelper.DbAttribute.DataProperty("PID"),RzhDbHelper.DbAttribute.DataPrimaryKey()]
+        [RzhDbHelper.DbAttribute.DataProperty("PID")]
         public string Id { get; set; }
 
         [RzhDbHelper.DbAttribute.DataProperty("PTNAME")]

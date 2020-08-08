@@ -15,7 +15,7 @@ namespace RzhDbHelper
     /// 提供对数据库访问的上下文类
     /// 本类为短连接
     /// </summary>
-    public class DbManager
+    public class DbManager : IDbManager
     {
         #region 私有字段
 
@@ -173,6 +173,18 @@ namespace RzhDbHelper
         /// </summary>
         /// <param name="parameters">参数对象集合</param>
         public virtual void AddParameters(params DbParameter[] parameters)
+        {
+            foreach (var item in parameters)
+            {
+                AddParameter(item);
+            }
+        }
+
+        /// <summary>
+        /// 添加参数集合
+        /// </summary>
+        /// <param name="parameters">参数对象集合</param>
+        public virtual void AddParameters(IEnumerable<DbParameter> parameters)
         {
             foreach (var item in parameters)
             {
@@ -358,7 +370,7 @@ namespace RzhDbHelper
                 adapter = DbProvider.CreateDataAdapter();
 
                 adapter.SelectCommand = command;
-
+               
                 adapter.Fill(dt);
                 if (columnUpper)
                 {
@@ -528,6 +540,7 @@ namespace RzhDbHelper
         /// <param name="sql">sql语句</param>
         /// <param name="values">返回的强类型集合</param>
         /// <returns>返回正确与否</returns>
+        [Obsolete("该方法性能上有所损耗,请使用QueryList")]
         public bool GetList<T>(string sql, out List<T> values)
         {
             values = new List<T>();
@@ -699,6 +712,114 @@ namespace RzhDbHelper
             }
             return list;
         }
+
+        /// <summary>
+        /// 获取指定对象集合
+        /// </summary>
+        /// <typeparam name="T">要获取的对象</typeparam>
+        /// <param name="query">sql语句</param>
+        /// <returns></returns>
+        public List<T> QueryList<T>(string query)
+        {
+            DbCommand cmd = null;
+            try
+            {
+                cmd = CreateCommand(query, CommandType.Text);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.HasRows)
+                    {
+                        return new List<T>();
+                    }
+
+                    List<T> list = new List<T>();
+                    while (reader.Read())
+                    {
+                        T tobj = Activator.CreateInstance<T>();//创建一个对象
+                        PropertyInfo[] pr = tobj.GetType().GetProperties();//获取对象的所有公共属性
+
+                        foreach (PropertyInfo property in pr)
+                        {
+                            //判断当前的属性是否实现了对应的特性
+                            DataPropertyAttribute attr = null;
+                            var attrs = property.GetCustomAttributes(typeof(DataPropertyAttribute), false);
+                            if (null != attrs && attrs.Length > 0)
+                            {
+                                attr = (DataPropertyAttribute)attrs[0];
+                            }
+
+
+                            string currentName = property.Name.ToLower();
+                            if (attr != null)
+                            {
+                                currentName = attr.DataName;
+                            }
+
+                            object value = null;
+                            try
+                            {
+                                value = reader[currentName];
+                            }
+                            catch
+                            {
+                                continue;//没有这一列,直接略过
+                            }
+
+                            //获取当前列类型
+                            Type colType = value.GetType();
+                            //获取当前字段类型
+                            Type itemType = property.PropertyType;
+                            //如果两个类型不一致
+                            if (colType.ToString() != itemType.ToString())
+                            {
+                                //如果值实现了IConvertible接口
+                                if (value is IConvertible)
+                                {
+                                    //直接将当前值转化成用户传进来的T类型
+                                    try
+                                    {
+                                        value = Convert.ChangeType(value, itemType);
+                                    }
+                                    catch
+                                    {
+                                        this.ErroMsg = $"{value} 的类型为 {colType},但在希望将其转成 {itemType} 时无法转换,请更正!";
+                                        return null;
+                                    }
+
+                                }
+                                else
+                                {
+                                    //没有实现,直接返回其字符串形式
+                                    value = value.ToString();
+                                }
+
+                            }
+
+                            if (value != DBNull.Value)
+                            {
+                                property.SetValue(tobj, value, null);
+                            }
+                            else
+                            {
+                                property.SetValue(tobj, null, null);
+                            }
+                        }
+                        list.Add(tobj);
+                    }
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.ErroMsg = ex.Message;
+                return null;
+            }
+            finally
+            {
+                this.DisposeCommand(cmd);
+            }
+        }
+
         #endregion
 
         #region 私有方法
@@ -811,7 +932,13 @@ namespace RzhDbHelper
                 for (int i = 0; i < columnCount; i++)
                 {
                     //判断当前的属性是否实现了对应的特性
-                    var attr = (DataPropertyAttribute)(item.GetCustomAttributes(typeof(DataPropertyAttribute), false)[0]);
+                    DataPropertyAttribute attr = null;
+                    var attrs = item.GetCustomAttributes(typeof(DataPropertyAttribute), false);
+                    if (null != attrs && attrs.Length > 0)
+                    {
+                        attr = (DataPropertyAttribute)attrs[0];
+                    }
+
                     // var attr = item.GetCustomAttribute<DataPropertyAttribute>();
                     string currentName = item.Name.ToLower();
                     if (attr != null)
@@ -869,7 +996,7 @@ namespace RzhDbHelper
             return t;
         }
 
-
+     
         #endregion
 
     }

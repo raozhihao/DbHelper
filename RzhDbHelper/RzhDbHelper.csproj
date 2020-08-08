@@ -48,12 +48,12 @@
     <Compile Include="ConnectionStrBuilder\OracleConStrBuilder.cs" />
     <Compile Include="ConnectionStrBuilder\PostgreSqlConStrBuilder.cs" />
     <Compile Include="ConnectionStrBuilder\SqlServerConStrBuilder.cs" />
-    <Compile Include="DbAttribute\DataPrimaryKeyAttribute.cs" />
     <Compile Include="DbAttribute\DataPropertyAttribute.cs" />
     <Compile Include="DbAttribute\DataTableAttribute.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="DbManager.cs" />
     <Compile Include="DbProviderGlobal.cs" />
+    <Compile Include="IDbManager.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
