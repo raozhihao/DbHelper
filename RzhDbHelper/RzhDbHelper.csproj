@@ -62,11 +62,9 @@
     <None Include="bin\Debug\DbHelper.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\DbHelper.dll" />
-    <Content Include="bin\Debug\DbHelper.pdb" />
-    <Content Include="bin\Debug\DbHelper.xml" />
-    <Content Include="bin\Debug\Npgsql.xml" />
-    <Content Include="bin\Debug\Oracledll\Oracle.DataAccess.dll" />
+    <Content Include="bin\Debug\RzhDbHelper.dll" />
+    <Content Include="bin\Debug\RzhDbHelper.pdb" />
+    <Content Include="bin\Debug\RzhDbHelper.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Release\" />
