@@ -13,8 +13,7 @@ namespace SimpleDemoTest
         {
             // TestLearn();
 
-            var db = new DbManager(@"Data Source=D:\Mobot Files\tasks\task.db;Version=3;Legacy Format=True;", System.Data.SQLite.SQLiteFactory.Instance);
-           bool re= db.GetDataTable("SELECT * from ScriptExecuteDetailResult", out var dt);
+            TestList();
         }
 
         private static void TestList()
@@ -25,9 +24,9 @@ namespace SimpleDemoTest
             List<CustomMoel> customMoels1 = db.QueryList<CustomMoel>("SELECT * FROM CUSTOM");//获取全字段
 
             List<CustomMoel> customMoels2 = db.QueryList<CustomMoel>("SELECT [ID],[NAME] FROM CUSTOM");//获取前两个字段
-
+            
             List<CustomMoel> customMoels3 = db.QueryList<CustomMoel>("SELECT [ID],[PHONE] FROM CUSTOM");//获取间隔字段
-
+            
             List<CustomMoel> customMoels4 = db.QueryList<CustomMoel>("SELECT [ID],[PHONE],[NAME],[GENGER] FROM CUSTOM");//非顺序性全字段
         }
 

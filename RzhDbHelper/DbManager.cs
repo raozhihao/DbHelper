@@ -370,7 +370,7 @@ namespace RzhDbHelper
                 adapter = DbProvider.CreateDataAdapter();
 
                 adapter.SelectCommand = command;
-
+               
                 adapter.Fill(dt);
                 if (columnUpper)
                 {
@@ -659,6 +659,8 @@ namespace RzhDbHelper
             if (null != transCommand)
             {
                 transCommand.Transaction.Commit();
+                transCommand.Connection.Close();
+                transCommand.Connection.Dispose();
                 transCommand.Dispose();
                 transCommand = null;
             }
@@ -672,6 +674,8 @@ namespace RzhDbHelper
             if (null != transCommand)
             {
                 transCommand.Transaction.Rollback();
+                transCommand.Connection.Close();
+                transCommand.Connection.Dispose();
                 transCommand.Dispose();
                 transCommand = null;
             }
@@ -828,6 +832,8 @@ namespace RzhDbHelper
         {
             if (command != null)
             {
+                command.Connection?.Close();
+                command.Connection?.Dispose();
                 command.Dispose();
                 command = null;
             }
@@ -990,9 +996,9 @@ namespace RzhDbHelper
             return t;
         }
 
-
+     
         #endregion
 
     }
-
+    
 }

@@ -59,12 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="bin\Debug\DbHelper.dll.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="bin\Debug\RzhDbHelper.dll" />
-    <Content Include="bin\Debug\RzhDbHelper.pdb" />
-    <Content Include="bin\Debug\RzhDbHelper.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Release\" />
