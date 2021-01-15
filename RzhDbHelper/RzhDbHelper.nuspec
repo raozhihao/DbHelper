@@ -2,19 +2,14 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>2.0.3.0</version>
+    <version>2.0.6.0</version>
     <title>RzhDbHelper</title>
     <authors>Rzh</authors>
-    <owners>Rzh</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/raozhihao/RzhDbHelper/</projectUrl>
     <description>为数据库提供统一访问接口</description>
-    <releaseNotes>适配不同的数据库.</releaseNotes>
-    <copyright>Copyright 2021</copyright>
-	<dependencies>
-		<group targetFramework=".NETFramework4">
-		</group>
-	</dependencies>
+    <releaseNotes>适配不同的数据库(修复sqlite的bug).</releaseNotes>
+    <copyright>$copyright$</copyright>
   </metadata>
 </package>
